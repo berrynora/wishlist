@@ -12,7 +12,6 @@ export default function LoginPage() {
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
 
-    // Fake login
     if (email && password) {
       router.push("/home");
     }

@@ -1,4 +1,5 @@
 import Navbar from "@/components/layout/Navbar";
+import { seedAction } from "./actions";
 import styles from "./home.module.scss";
 
 export default function HomePage() {
@@ -26,6 +27,11 @@ export default function HomePage() {
               <button className={styles.secondaryBtn}>
                 Explore Friends' Wishes →
               </button>
+              <form action={seedAction}>
+                <button className={styles.secondaryBtn} type="submit">
+                  Run Seed (test)
+                </button>
+              </form>
             </div>
           </div>
         </section>
