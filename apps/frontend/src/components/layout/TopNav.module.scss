@@ -1,0 +1,143 @@
+.header {
+  background: #fffafa;
+  border-bottom: 1px solid #f3e8ee;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: auto;
+  padding: 10px 24px;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 32px;
+}
+
+/* ===== LOGO ===== */
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.logoIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #c0267e;
+  color: white;
+
+  display: grid;
+  place-items: center;
+}
+
+/* ===== NAV ===== */
+
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.navItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: #374151;
+
+  overflow: hidden;
+}
+
+.icon {
+  position: relative;
+  z-index: 1;
+  color: #6b7280;
+}
+
+.label {
+  position: relative;
+  z-index: 1;
+}
+
+.activePill {
+  position: absolute;
+  inset: 0;
+  background: #fde7f3;
+  border-radius: 999px;
+  z-index: 0;
+}
+
+/* ===== RIGHT ===== */
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #f3e8ee;
+  background: white;
+
+  input {
+    border: none;
+    outline: none;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    width: 160px;
+  }
+
+  svg {
+    color: #9ca3af;
+  }
+}
+
+.notification {
+  position: relative;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+
+  background: #c0267e;
+  color: white;
+  font-size: 11px;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 999px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fde7f3;
+  color: #c0267e;
+
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+}

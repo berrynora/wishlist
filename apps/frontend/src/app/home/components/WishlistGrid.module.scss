@@ -1,0 +1,10 @@
+.title {
+  font-family: var(--font-sans);
+  margin-bottom: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}

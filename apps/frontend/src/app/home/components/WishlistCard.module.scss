@@ -1,0 +1,75 @@
+@use "@/styles/variables" as *;
+
+.card {
+  background: #ffffff;
+  border: 1px solid #f1f1f1;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+/* ===== TOP AREA ===== */
+
+.top {
+  height: 120px;
+  display: grid;
+  place-items: center;
+}
+
+.icon {
+  color: #b8b8b8;
+}
+
+/* Accent backgrounds */
+.pink {
+  background: #f6dce8;
+}
+
+.blue {
+  background: #e4f2fb;
+}
+
+.peach {
+  background: #fdeee5;
+}
+
+.mint {
+  background: #ddf7ec;
+}
+
+.lavender {
+  background: #eeebff;
+}
+
+/* ===== CONTENT ===== */
+
+.content {
+  padding: 16px 18px;
+}
+
+.title {
+  font-family: var(--font-sans);
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Row under title */
+.meta {
+  font-family: var(--font-sans);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.items {
+  white-space: nowrap;
+}
+
+.visibility {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
