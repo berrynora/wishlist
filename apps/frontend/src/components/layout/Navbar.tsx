@@ -8,6 +8,7 @@ export default function Navbar() {
       <div style={styles.left}>MyApp</div>
       <div style={styles.right}>
         <Link href="/home">Home</Link>
+        <Link href="/items">Items</Link>
         <Link href="/profile">Profile</Link>
         <Link href="/login">Logout</Link>
       </div>

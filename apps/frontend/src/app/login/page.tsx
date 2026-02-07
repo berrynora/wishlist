@@ -3,17 +3,33 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Button from "@/components/ui/Button";
+import { loginWithEmail } from "@/api/login";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
 
-    if (email && password) {
+    if (!email || !password) {
+      setError("Email and password are required.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await loginWithEmail(email, password);
       router.push("/home");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -35,7 +51,10 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
         />
-        <Button>Login</Button>
+        {error && <p style={styles.error}>{error}</p>}
+        <Button type="submit" disabled={loading}>
+          {loading ? "Please wait..." : "Login"}
+        </Button>
       </form>
     </main>
   );
@@ -53,5 +72,9 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "0.6rem",
     border: "1px solid var(--border)",
     borderRadius: "6px",
+  },
+  error: {
+    color: "#d32f2f",
+    margin: 0,
   },
 };
