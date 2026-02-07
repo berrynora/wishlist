@@ -1,7 +1,7 @@
 "use client";
-import Navbar from "@/components/layout/Navbar";
-import styles from "./items.module.scss";
 import { useState } from "react";
+import { ItemsHeader } from "./components/ItemsHeader";
+import { ItemsTabs } from "./components/ItemsTabs";
 
 interface Product {
   title: string | null;
@@ -16,6 +16,7 @@ export default function ItemsPage() {
   const [product, setProduct] = useState<Product | null>(null); // Додайте тип тут
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tab, setTab] = useState<"add" | "preview">("add");
 
   const handleScrape = async () => {
     setLoading(true);
@@ -31,6 +32,7 @@ export default function ItemsPage() {
 
       if (response.ok) {
         setProduct(data);
+        setTab("preview");
       } else {
         setError(data.error || "Помилка при завантаженні");
       }
@@ -43,60 +45,118 @@ export default function ItemsPage() {
   };
 
   return (
-    <>
-      <Navbar />
-      <main className="container">
-        <div className="p-4 max-w-2xl mx-auto">
-          <div className="space-y-4">
+    <main style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px" }}>
+      <ItemsHeader />
+
+      <ItemsTabs
+        active={tab}
+        previewCount={product ? 1 : 0}
+        onChange={setTab}
+      />
+
+      {tab === "add" && (
+        <div style={{ maxWidth: 560 }}>
+          <div style={{ display: "grid", gap: 12 }}>
             <input
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="Вставте посилання на товар"
-              className="border p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{
+                border: "1px solid #e5e7eb",
+                padding: "12px 14px",
+                borderRadius: 12,
+                fontSize: 14,
+              }}
             />
             <button
               onClick={handleScrape}
               disabled={loading || !url}
-              className="w-full bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              style={{
+                background: loading || !url ? "#e5e7eb" : "#c0267e",
+                color: loading || !url ? "#9ca3af" : "#ffffff",
+                border: "none",
+                padding: "12px 16px",
+                borderRadius: 12,
+                fontWeight: 600,
+                cursor: loading || !url ? "not-allowed" : "pointer",
+              }}
             >
               {loading ? "Завантаження..." : "Отримати дані"}
             </button>
           </div>
 
           {error && (
-            <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            <div
+              style={{
+                marginTop: 16,
+                padding: "12px 14px",
+                border: "1px solid #fecaca",
+                background: "#fef2f2",
+                color: "#b91c1c",
+                borderRadius: 12,
+                fontSize: 14,
+              }}
+            >
               {error}
+            </div>
+          )}
+        </div>
+      )}
+
+      {tab === "preview" && (
+        <div style={{ maxWidth: 640 }}>
+          {!product && (
+            <div
+              style={{
+                padding: "16px 18px",
+                border: "1px dashed #e5e7eb",
+                borderRadius: 14,
+                color: "#6b7280",
+                fontSize: 14,
+              }}
+            >
+              Ще немає превʼю. Додайте посилання на товар.
             </div>
           )}
 
           {product && (
-            <div className="mt-6 border rounded-lg overflow-hidden shadow-lg">
+            <div
+              style={{
+                border: "1px solid #e5e7eb",
+                borderRadius: 16,
+                overflow: "hidden",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
+              }}
+            >
               {product.image && (
                 <img
                   src={product.image}
                   alt={product.title || "Product"}
-                  className="w-full h-64 object-cover"
+                  style={{ width: "100%", height: 280, objectFit: "cover" }}
                 />
               )}
-              <div className="p-4">
+              <div style={{ padding: 18 }}>
                 {product.title && (
-                  <h2 className="text-2xl font-bold mb-2">{product.title}</h2>
+                  <h2 style={{ fontSize: 20, marginBottom: 8 }}>
+                    {product.title}
+                  </h2>
                 )}
                 {product.description && (
-                  <p className="text-gray-600 mb-4">
-                    Description: {product.description}</p>
+                  <p style={{ color: "#6b7280", marginBottom: 12 }}>
+                    {product.description}
+                  </p>
                 )}
                 {product.price && (
-                  <p className="text-2xl text-green-600 font-bold">
-                    Price: {product.price}
+                  <p style={{ fontSize: 18, color: "#16a34a" }}>
+                    {product.price}
                   </p>
                 )}
               </div>
             </div>
           )}
         </div>
-      </main>
-    </>
+      )}
+    </main>
   );
 }
