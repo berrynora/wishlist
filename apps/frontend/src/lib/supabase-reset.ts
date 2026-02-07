@@ -186,7 +186,7 @@ async function createItems(wishlistId: string): Promise<void> {
 }
 
 /* =======================
-   PUBLIC API
+   PUBLIC API 
 ======================= */
 
 export async function runSeed(): Promise<void> {
