@@ -1,0 +1,23 @@
+.tabs {
+  background: #f7eff3;
+  border-radius: 999px;
+  padding: 6px;
+  display: inline-flex;
+  gap: 6px;
+  margin-bottom: 20px;
+
+  button {
+    border: none;
+    background: transparent;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-family: var(--font-sans);
+    cursor: pointer;
+  }
+
+  .active {
+    background: white;
+    font-weight: 600;
+  }
+}

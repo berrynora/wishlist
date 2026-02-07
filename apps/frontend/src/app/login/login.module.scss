@@ -1,0 +1,16 @@
+.page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 48px 24px;
+}
+
+.content {
+  width: 100%;
+  max-width: 520px;
+}
+
+.cardWrap {
+  margin-top: 8px;
+}
