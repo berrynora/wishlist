@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { Chrome } from "lucide-react";
-import { loginWithEmail, registerWithEmail } from "@/api/login";
+import {
+  loginWithEmail,
+  loginWithGoogle,
+  registerWithEmail,
+} from "@/api/login";
 import styles from "./AuthForm.module.scss";
 
 type Props = {
@@ -15,6 +19,7 @@ export function AuthForm({ mode, onLoginSuccess }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -45,11 +50,29 @@ export function AuthForm({ mode, onLoginSuccess }: Props) {
     }
   }
 
+  const handleGoogle = async () => {
+    setError(null);
+    setNotice(null);
+    setGoogleLoading(true);
+
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Google login failed");
+      setGoogleLoading(false);
+    }
+  };
+
   return (
     <div className={styles.card}>
-      <button type="button" className={styles.googleButton}>
+      <button
+        type="button"
+        className={styles.googleButton}
+        onClick={handleGoogle}
+        disabled={googleLoading}
+      >
         <Chrome size={16} />
-        Continue with Google
+        {googleLoading ? "Redirecting..." : "Continue with Google"}
       </button>
 
       <div className={styles.divider}>
@@ -78,7 +101,11 @@ export function AuthForm({ mode, onLoginSuccess }: Props) {
         {error && <p className={styles.error}>{error}</p>}
         {notice && <p className={styles.notice}>{notice}</p>}
 
-        <button type="submit" className={styles.submit} disabled={loading}>
+        <button
+          type="submit"
+          className={styles.submit}
+          disabled={loading || googleLoading}
+        >
           {loading
             ? isLogin
               ? "Signing in..."

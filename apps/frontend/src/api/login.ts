@@ -29,3 +29,17 @@ export async function logout(): Promise<void> {
 
   if (error) throw error;
 }
+
+export async function loginWithGoogle(): Promise<void> {
+  const { error } = await supabaseBrowser.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}/api/auth/callback`,
+      queryParams: {
+        prompt: "select_account",
+      },
+    },
+  });
+
+  if (error) throw error;
+}
