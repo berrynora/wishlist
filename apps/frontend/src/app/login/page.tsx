@@ -2,56 +2,24 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Button from "@/components/ui/Button";
+import styles from "./login.module.scss";
+import { LoginHeader } from "./components/LoginHeader";
+import { LoginTabs } from "./components/LoginTabs";
+import { AuthForm } from "./components/AuthForm";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-
-    if (email && password) {
-      router.push("/home");
-    }
-  }
+  const [tab, setTab] = useState<"login" | "register">("login");
 
   return (
-    <main style={styles.container}>
-      <h1>Login</h1>
-
-      <form onSubmit={handleLogin} style={styles.form}>
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={styles.input}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={styles.input}
-        />
-        <Button>Login</Button>
-      </form>
+    <main className={styles.page}>
+      <div className={styles.content}>
+        <LoginHeader />
+        <LoginTabs active={tab} onChange={setTab} />
+        <div className={styles.cardWrap}>
+          <AuthForm mode={tab} onLoginSuccess={() => router.replace("/home")} />
+        </div>
+      </div>
     </main>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: { padding: "2rem" },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "1rem",
-    maxWidth: 300,
-  },
-  input: {
-    padding: "0.6rem",
-    border: "1px solid var(--border)",
-    borderRadius: "6px",
-  },
-};

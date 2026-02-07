@@ -1,5 +1,5 @@
 import "./globals.scss";
-import { TopNav } from "@/components/layout/TopNav";
+import { AppShell } from "@/components/layout/AppShell";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 
 const dmSans = DM_Sans({
@@ -22,8 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} ${playfair.variable}`}>
       <body suppressHydrationWarning>
-        <TopNav />
-        {children}
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
