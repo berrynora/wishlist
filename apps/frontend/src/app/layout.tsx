@@ -1,15 +1,30 @@
 import "./globals.scss";
-import type { ReactNode } from "react";
+import { TopNav } from "@/components/layout/TopNav";
+import { DM_Sans, Playfair_Display } from "next/font/google";
 
-export const metadata = {
-  title: "My App",
-  description: "Next.js Starter",
-};
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
+});
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className={`${dmSans.variable} ${playfair.variable}`}>
+      <body suppressHydrationWarning>
+        <TopNav />
+        {children}
+      </body>
     </html>
   );
 }
