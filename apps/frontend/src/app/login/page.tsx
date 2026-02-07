@@ -17,10 +17,7 @@ export default function LoginPage() {
         <LoginHeader />
         <LoginTabs active={tab} onChange={setTab} />
         <div className={styles.cardWrap}>
-          <AuthForm
-            mode={tab}
-            onLoginSuccess={() => router.replace("/home")}
-          />
+          <AuthForm mode={tab} onLoginSuccess={() => router.replace("/home")} />
         </div>
       </div>
     </main>
