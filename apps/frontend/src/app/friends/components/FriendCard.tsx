@@ -1,22 +1,21 @@
 import styles from "./FriendCard.module.scss";
+import type { FriendWithDetails } from "@/api/types/friends";
 
 type Props = {
-  name: string;
-  username: string;
-  wishlists: number;
-  mutual: number;
+  friend: FriendWithDetails;
 };
 
-export function FriendCard({ name, username, wishlists, mutual }: Props) {
+export function FriendCard({ friend }: Props) {
   return (
     <div className={styles.card}>
       <div className={styles.avatar}>👤</div>
 
       <div className={styles.info}>
-        <strong>{name}</strong>
-        <span>@{username}</span>
+        <strong>{friend.display_name}</strong>
+        {friend.nickname && <span>@{friend.nickname}</span>}
         <div className={styles.meta}>
-          {wishlists} wishlists · {mutual} mutual
+          {friend.wishlists_count} wishlists · {friend.mutual_friends_count}{" "}
+          mutual
         </div>
       </div>
 
