@@ -1,7 +1,7 @@
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import { Wishlist, WishlistAccent, WishlistVisibility } from "@/types/wishlist";
 import { getWishlists } from "@/api/helpers/wishlist-helper";
-import { CreateWishlistParams, UpdateWishlistParams } from "./types/wishilst";
+import { CreateWishlistParams, UpdateWishlistParams, WishlistWithItems } from "./types/wishilst";
 
 export async function getMyWishlists(
   params: PaginationParams = {},
@@ -34,17 +34,28 @@ export async function getPublicWishlists(
 
 export async function getFriendWishlists(
   friendUserId: string,
-  params: PaginationParams = {},
-): Promise<Wishlist[]> {
-  const {
-    data: { session },
-  } = await supabaseBrowser.auth.getSession();
+  { skip = 0, take = 10 }: PaginationParams = {}
+): Promise<WishlistWithItems[]> {
+  const session = (await supabaseBrowser.auth.getSession()).data.session;
 
-  if (friendUserId === session?.user?.id) {
-    throw new Error("Use getMyWishlists for own wishlists");
+  if (!session?.user.id) throw new Error('Not authenticated');
+
+  if (friendUserId === session.user.id) {
+    throw new Error('Use getMyWishlists for own wishlists');
   }
 
-  return getWishlists((query) => query.eq("user_id", friendUserId), params);
+  const { data, error } = await supabaseBrowser.rpc(
+    'get_friend_wishlists_with_items',
+    {
+      p_friend_id: friendUserId,
+      p_skip: skip,
+      p_take: take,
+    }
+  );
+
+  if (error) throw error;
+
+  return data ?? [];
 }
 
 export async function createWishlist({

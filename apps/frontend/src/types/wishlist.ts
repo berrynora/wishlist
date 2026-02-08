@@ -4,7 +4,6 @@ export enum WishlistVisibility {
   Private = 2,
 }
 
-// Enum для accent
 export enum WishlistAccent {
   Pink = 0,
   Blue = 1,
@@ -24,4 +23,15 @@ export interface Wishlist {
   accent_type: WishlistAccent;
   created_at: string;
   itemsCount?: number;
+}
+
+export interface Item {
+  id: string;
+  name: string;
+  description: string | null;
+  price: string | null;
+  priority: number | null;
+  url: string | null;
+  status: number; // 0 = available, 1 = reserved, 2 = purchased
+  created_at: string;
 }
