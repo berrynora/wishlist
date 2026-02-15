@@ -19,7 +19,6 @@ export interface Wishlist {
   description: string | null;
   visibility_type: WishlistVisibility;
   image_url: string | null;
-  priority: number;
   accent_type: WishlistAccent;
   created_at: string;
   itemsCount?: number;

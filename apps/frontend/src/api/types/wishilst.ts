@@ -5,7 +5,6 @@ export interface CreateWishlistParams {
   description?: string;
   visibility?: WishlistVisibility;
   imageUrl?: string;
-  priority?: number;
   accent?: WishlistAccent;
 }
 
@@ -14,7 +13,6 @@ export interface UpdateWishlistParams {
   description?: string;
   visibility?: WishlistVisibility;
   imageUrl?: string;
-  priority?: number;
   accent?: WishlistAccent;
 }
 
@@ -28,3 +26,21 @@ export interface WishlistWithItems {
   items_count: number;
   items: Item[];
 }
+
+export type DiscoverItem = {
+  id: string;
+  title: string;
+  price: number;
+  store: string;
+  image: string;
+  priority?: "Low" | "Medium" | "High";
+};
+
+export type DiscoverSection = {
+  id: string;
+  owner: string;
+  username: string;
+  wishlist: string;
+  date?: string;
+  items: DiscoverItem[];
+};
