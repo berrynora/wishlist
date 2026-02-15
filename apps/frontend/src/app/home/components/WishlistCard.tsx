@@ -16,9 +16,6 @@ export function WishlistCard({ wishlist }: { wishlist: Wishlist }) {
   const VisibilityIcon = visibilityIcon[visibility];
   const itemsCount = wishlist.itemsCount ?? 0;
 
-export function WishlistCard({ wishlist }: { wishlist: Wishlist }) {
-  const router = useRouter();
-
   return (
     <div
       className={styles.card}
