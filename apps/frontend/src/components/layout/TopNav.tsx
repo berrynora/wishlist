@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { Gift, Users, Heart, Search, Bell } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { NotificationsPanel } from "@/components/notifications/NotificationsPanel";
 
 const navItems = [
   { label: "My Wishlists", href: "/home", icon: <Gift size={16} /> },
@@ -15,10 +17,31 @@ const navItems = [
 export function TopNav() {
   const pathname = usePathname();
 
+  const [open, setOpen] = useState(false);
+
+  const [notifications, setNotifications] = useState([
+    { id: "1", text: "Emma reserved an item 🎉", date: "2 min ago" },
+    { id: "2", text: "James sent you a friend request", date: "1 hour ago" },
+    { id: "3", text: "Birthday coming soon 🎂", date: "Yesterday" },
+  ]);
+
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        {/* Logo */}
         <div className={styles.logo}>
           <div className={styles.logoIcon}>
             <Gift size={16} />
@@ -26,7 +49,6 @@ export function TopNav() {
           <span>Wishly</span>
         </div>
 
-        {/* Navigation */}
         <nav className={styles.nav}>
           {navItems.map((item) => {
             const isActive = pathname === item.href;
@@ -52,16 +74,29 @@ export function TopNav() {
           })}
         </nav>
 
-        {/* Right side */}
         <div className={styles.right}>
           <div className={styles.search}>
             <Search size={16} />
             <input placeholder="Search wishlists..." />
           </div>
 
-          <div className={styles.notification}>
-            <Bell size={18} />
-            <span className={styles.badge}>3</span>
+          <div className={styles.notification} ref={ref}>
+            <div
+              className={styles.bell}
+              onClick={() => setOpen((prev) => !prev)}
+            >
+              <Bell size={18} />
+              {notifications.length > 0 && (
+                <span className={styles.badge}>{notifications.length}</span>
+              )}
+            </div>
+
+            {open && (
+              <NotificationsPanel
+                notifications={notifications}
+                onClear={() => setNotifications([])}
+              />
+            )}
           </div>
 
           <div className={styles.avatar}>S</div>

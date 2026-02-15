@@ -1,6 +1,10 @@
 import styles from "./DashboardHeader.module.scss";
 
-export function DashboardHeader() {
+type Props = {
+  onNewWishlist: () => void;
+};
+
+export function DashboardHeader({ onNewWishlist }: Props) {
   return (
     <div className={styles.header}>
       <div>
@@ -10,7 +14,9 @@ export function DashboardHeader() {
         </p>
       </div>
 
-      <button className={styles.button}>+ New Wishlist</button>
+      <button className={styles.button} onClick={onNewWishlist}>
+        + New Wishlist
+      </button>
     </div>
   );
 }

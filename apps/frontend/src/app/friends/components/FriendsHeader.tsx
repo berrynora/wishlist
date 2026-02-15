@@ -1,6 +1,11 @@
 import styles from "./FriendsHeader.module.scss";
+import { Button } from "@/components/ui/Button/Button";
 
-export function FriendsHeader() {
+type Props = {
+  onInvite: () => void;
+};
+
+export function FriendsHeader({ onInvite }: Props) {
   return (
     <div className={styles.header}>
       <div>
@@ -8,7 +13,7 @@ export function FriendsHeader() {
         <p>Connect with friends and discover their wishlists.</p>
       </div>
 
-      <button className={styles.button}>Invite Friends</button>
+      <Button onClick={onInvite}>Invite Friends</Button>
     </div>
   );
 }

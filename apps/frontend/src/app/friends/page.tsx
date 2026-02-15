@@ -6,13 +6,15 @@ import { FriendsHeader } from "./components/FriendsHeader";
 import { FriendsTabs } from "./components/FriendsTabs";
 import { FriendCard } from "./components/FriendCard";
 import { RequestCard } from "./components/RequestCard";
+import { AddFriendModal } from "./components/AddFriendModal";
 
 export default function FriendsPage() {
   const [tab, setTab] = useState<"friends" | "requests">("friends");
+  const [open, setOpen] = useState(false);
 
   return (
     <main style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px" }}>
-      <FriendsHeader />
+      <FriendsHeader onInvite={() => setOpen(true)} />
 
       <FriendsTabs
         active={tab}
@@ -40,6 +42,8 @@ export default function FriendsPage() {
           ))}
         </div>
       )}
+
+      <AddFriendModal open={open} onClose={() => setOpen(false)} />
     </main>
   );
 }

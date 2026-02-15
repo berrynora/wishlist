@@ -1,0 +1,23 @@
+@use "@/styles/variables" as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.35);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+}
+
+.modal {
+  width: min(500px, 90%);
+  background: white;
+  border-radius: $radius-lg;
+  padding: 20px;
+  border: 1px solid $border;
+}
+
+.title {
+  font-family: var(--font-serif);
+  margin-bottom: 16px;
+}

@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import styles from "./WishlistCard.module.scss";
 import { Wishlist } from "@/types/wishlist";
 import { Gift, Users, Globe, Lock } from "lucide-react";
@@ -9,14 +12,18 @@ const visibilityIcon = {
 };
 
 export function WishlistCard({ wishlist }: { wishlist: Wishlist }) {
+  const router = useRouter();
+
   return (
-    <div className={styles.card}>
-      {/* Top colored area */}
+    <div
+      className={styles.card}
+      onClick={() => router.push(`/wishlist/${wishlist.id}`)}
+      style={{ cursor: "pointer" }}
+    >
       <div className={`${styles.top} ${styles[wishlist.accent]}`}>
         <Gift size={40} className={styles.icon} />
       </div>
 
-      {/* Bottom content */}
       <div className={styles.content}>
         <h3 className={styles.title}>{wishlist.title}</h3>
 
