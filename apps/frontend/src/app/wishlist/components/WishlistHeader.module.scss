@@ -12,19 +12,21 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
-}
 
-h1 {
+  h1 {
   font-family: var(--font-serif);
   font-size: 28px;
   margin: 0 0 6px;
-}
+  }
 
 p {
   font-size: 14px;
   color: $text-muted;
   margin: 0 0 10px;
 }
+}
+
+
 
 .meta {
   display: flex;

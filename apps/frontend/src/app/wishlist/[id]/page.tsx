@@ -2,8 +2,8 @@
 
 import { useParams } from "next/navigation";
 import { wishlistItemsMock } from "@/lib/wishlistItems.mock";
-import { WishlistHeader } from "./components/WishlistHeader";
-import { WishlistItemsGrid } from "./components/WishlistItemsGrid";
+import { WishlistHeader } from "../components/WishlistHeader";
+import { WishlistItemsGrid } from "../components/WishlistItemsGrid";
 import styles from "./WishlistPage.module.scss";
 
 export default function WishlistItemsPage() {
