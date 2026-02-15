@@ -1,7 +1,7 @@
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import { Wishlist, WishlistAccent, WishlistVisibility } from "@/types/wishlist";
 import { getWishlists } from "@/api/helpers/wishlist-helper";
-import { CreateWishlistParams, UpdateWishlistParams, WishlistWithItems } from "./types/wishilst";
+import { CreateWishlistParams, UpdateWishlistParams,DiscoverSection } from "./types/wishilst";
 
 export async function getMyWishlists(
   params: PaginationParams = {},
@@ -32,38 +32,33 @@ export async function getPublicWishlists(
   );
 }
 
-export async function getFriendWishlists(
-  friendUserId: string,
-  { skip = 0, take = 10 }: PaginationParams = {}
-): Promise<WishlistWithItems[]> {
-  const session = (await supabaseBrowser.auth.getSession()).data.session;
-
-  if (!session?.user.id) throw new Error('Not authenticated');
-
-  if (friendUserId === session.user.id) {
-    throw new Error('Use getMyWishlists for own wishlists');
-  }
+export async function getFriendsWishlistsDiscover(
+  params: PaginationParams = {},
+): Promise<DiscoverSection[]> {
+  const { skip = 0, take = 10 } = params;
 
   const { data, error } = await supabaseBrowser.rpc(
-    'get_friend_wishlists_with_items',
+    'get_friends_wishlists_discover',
     {
-      p_friend_id: friendUserId,
       p_skip: skip,
       p_take: take,
     }
   );
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error fetching friends wishlists:', error);
+    throw error;
+  }
 
-  return data ?? [];
+  return data || [];
 }
+
 
 export async function createWishlist({
   title,
   description,
   visibility = WishlistVisibility.Private,
   imageUrl,
-  priority = 0,
   accent = WishlistAccent.Pink,
 }: CreateWishlistParams): Promise<Wishlist> {
   const {
@@ -82,7 +77,6 @@ export async function createWishlist({
       description,
       visibility_type: visibility,
       image_url: imageUrl,
-      priority,
       accent_type: accent,
     })
     .select()
@@ -105,7 +99,6 @@ export async function updateWishlist(
   if (updates.visibility !== undefined)
     dbUpdates.visibility_type = updates.visibility;
   if (updates.imageUrl !== undefined) dbUpdates.image_url = updates.imageUrl;
-  if (updates.priority !== undefined) dbUpdates.priority = updates.priority;
   if (updates.accent !== undefined) dbUpdates.accent_type = updates.accent;
 
   const { data, error } = await supabaseBrowser

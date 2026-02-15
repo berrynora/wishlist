@@ -2,10 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   getMyWishlists,
   getPublicWishlists,
-  getFriendWishlists,
   createWishlist,
   updateWishlist,
   deleteWishlist,
+  getFriendsWishlistsDiscover,
 } from '@/api/wishlist';
 import type {
   CreateWishlistParams,
@@ -36,14 +36,12 @@ export function usePublicWishlists(params?: PaginationParams) {
   });
 }
 
-export function useFriendWishlists(userId: string, params?: PaginationParams) {
+export function useFriendsWishlistsDiscover(params?: PaginationParams) {
   return useQuery({
-    queryKey: wishlistKeys.friend(userId, params),
-    queryFn: () => getFriendWishlists(userId, params),
-    enabled: !!userId,
+    queryKey: wishlistKeys.friends(params),
+    queryFn: () => getFriendsWishlistsDiscover(params),
   });
 }
-
 
 export function useCreateWishlist() {
   const queryClient = useQueryClient();

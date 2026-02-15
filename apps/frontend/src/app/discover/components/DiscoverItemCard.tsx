@@ -1,12 +1,5 @@
 import styles from "./DiscoverItemCard.module.scss";
-
-type Props = {
-  title: string;
-  price: number;
-  store: string;
-  image: string;
-  priority?: string;
-};
+import { DiscoverItem } from "@/api/types/wishilst";
 
 export function DiscoverItemCard({
   title,
@@ -14,7 +7,7 @@ export function DiscoverItemCard({
   store,
   image,
   priority,
-}: Props) {
+}: DiscoverItem) {
   return (
     <div className={styles.card}>
       {priority && <span className={styles.priority}>{priority}</span>}

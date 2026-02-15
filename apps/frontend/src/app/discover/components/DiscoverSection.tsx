@@ -1,6 +1,6 @@
 import styles from "./DiscoverSection.module.scss";
 import { DiscoverItemCard } from "./DiscoverItemCard";
-import { DiscoverSection as Section } from "@/lib/discover.mock";
+import { DiscoverSection as Section } from "@/api/types/wishilst";
 
 export function DiscoverSection({
   owner,
