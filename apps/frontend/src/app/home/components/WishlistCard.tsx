@@ -3,13 +3,18 @@
 import { useRouter } from "next/navigation";
 import styles from "./WishlistCard.module.scss";
 import { Wishlist } from "@/types/wishlist";
-import { Gift, Users, Globe, Lock } from "lucide-react";
+import { Gift } from "lucide-react";
+import {
+  accentClass,
+  visibilityIcon,
+  visibilityLabel,
+} from "@/lib/helpers/wishlist-helper";
 
-const visibilityIcon = {
-  Public: <Globe size={14} />,
-  "Friends only": <Users size={14} />,
-  Private: <Lock size={14} />,
-};
+export function WishlistCard({ wishlist }: { wishlist: Wishlist }) {
+  const accent = accentClass[wishlist.accent_type] ?? "pink";
+  const visibility = wishlist.visibility_type;
+  const VisibilityIcon = visibilityIcon[visibility];
+  const itemsCount = wishlist.itemsCount ?? 0;
 
 export function WishlistCard({ wishlist }: { wishlist: Wishlist }) {
   const router = useRouter();
@@ -28,11 +33,11 @@ export function WishlistCard({ wishlist }: { wishlist: Wishlist }) {
         <h3 className={styles.title}>{wishlist.title}</h3>
 
         <div className={styles.meta}>
-          <span className={styles.items}>{wishlist.itemsCount} items</span>
+          <span className={styles.items}>{itemsCount} items</span>
 
           <span className={styles.visibility}>
-            {visibilityIcon[wishlist.visibility]}
-            {wishlist.visibility}
+            <VisibilityIcon size={14} />
+            {visibilityLabel[visibility]}
           </span>
         </div>
       </div>
