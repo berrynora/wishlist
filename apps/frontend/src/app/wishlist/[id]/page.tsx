@@ -2,8 +2,9 @@
 
 import { useParams } from "next/navigation";
 import { wishlistItemsMock } from "@/lib/wishlistItems.mock";
-import { Button } from "@/components/ui/Button/Button";
-import { useState } from "react";
+import { WishlistHeader } from "./components/WishlistHeader";
+import { WishlistItemsGrid } from "./components/WishlistItemsGrid";
+import styles from "./WishlistPage.module.scss";
 
 export default function WishlistItemsPage() {
   const params = useParams();
@@ -11,59 +12,19 @@ export default function WishlistItemsPage() {
 
   const items = wishlistItemsMock[id] || [];
 
-  return (
-    <main style={{ maxWidth: 1000, margin: "0 auto", padding: 32 }}>
-      <h1 style={{ fontFamily: "var(--font-serif)", marginBottom: 24 }}>
-        Wishlist Items
-      </h1>
+  // mock wishlist meta
+  const wishlist = {
+    title: "Birthday Wishes",
+    description: "Things I'd love for my birthday this year!",
+    visibility: "Friends only",
+    itemsCount: items.length,
+    accent: "pink",
+  };
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3,1fr)",
-          gap: 20,
-        }}
-      >
-        {items.map((item) => (
-          <WishlistItemCard key={item.id} {...item} />
-        ))}
-      </div>
+  return (
+    <main className={styles.page}>
+      <WishlistHeader wishlist={wishlist} />
+      <WishlistItemsGrid items={items} />
     </main>
-  );
-}
-
-function WishlistItemCard({
-  title,
-  price,
-  reserved,
-}: {
-  title: string;
-  price: number;
-  reserved: boolean;
-}) {
-  const [isReserved, setReserved] = useState(reserved);
-
-  return (
-    <div
-      style={{
-        border: "1px solid #eee",
-        borderRadius: 16,
-        padding: 16,
-        background: "white",
-      }}
-    >
-      <strong>{title}</strong>
-      <div style={{ color: "#c0267e", margin: "6px 0" }}>${price}</div>
-
-      {!isReserved ? (
-        <Button variant="success" onClick={() => setReserved(true)}>
-          Reserve
-        </Button>
-      ) : (
-        <Button variant="secondary" disabled>
-          Reserved
-        </Button>
-      )}
-    </div>
   );
 }

@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { Modal } from "@/components/ui/Modal/Modal";
-import { Input } from "@/components/ui/Input/Input";
 import { Button } from "@/components/ui/Button/Button";
+import { Copy } from "lucide-react";
+import styles from "./AddFriendModal.module.scss";
 
 type Props = {
   open: boolean;
@@ -11,36 +12,61 @@ type Props = {
 };
 
 export function AddFriendModal({ open, onClose }: Props) {
-  const [email, setEmail] = useState("");
+  const inviteLink = "https://wishly.app/add/sarah_m";
+  const [username, setUsername] = useState("");
+  const [copied, setCopied] = useState(false);
 
-  const handleSubmit = () => {
-    if (!email.trim()) return;
+  function handleCopy() {
+    navigator.clipboard.writeText(inviteLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
 
-    console.log("Friend request sent to:", email);
-    setEmail("");
-    onClose();
-  };
+  function handleSearch() {
+    if (!username.trim()) return;
+    console.log("Search friend:", username);
+  }
 
   return (
-    <Modal open={open} onClose={onClose} title="Add Friend">
-      <div style={{ display: "grid", gap: 16 }}>
-        <div style={{ display: "grid", gap: 6 }}>
-          <label style={{ fontSize: 13, color: "#6b7280" }}>Friend Email</label>
-
-          <Input
-            placeholder="friend@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+    <Modal open={open} onClose={onClose}>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h2>Invite Friends</h2>
+          <p>Share your unique link or search for friends on Wishly.</p>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
-          <Button variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
+        {/* Invite Link */}
+        <div className={styles.field}>
+          <label>Your invite link</label>
 
-          <Button onClick={handleSubmit} disabled={!email.trim()}>
-            Send Request
+          <div className={styles.linkWrapper}>
+            <input value={inviteLink} readOnly />
+
+            <button className={styles.copyBtn} onClick={handleCopy}>
+              <Copy size={16} />
+            </button>
+          </div>
+
+          {copied && <span className={styles.copied}>Copied to clipboard</span>}
+        </div>
+
+        {/* Divider */}
+        <div className={styles.divider}>
+          <span>OR SEARCH</span>
+        </div>
+
+        {/* Username Search */}
+        <div className={styles.searchRow}>
+          <div className={styles.usernameInput}>
+            <input
+              placeholder="@username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+
+          <Button onClick={handleSearch} disabled={!username.trim()}>
+            Search
           </Button>
         </div>
       </div>

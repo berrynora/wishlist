@@ -1,0 +1,92 @@
+@use "@/styles/variables" as *;
+
+.header {
+  padding: 40px 24px 28px;
+  border-bottom: 1px solid #f3e8ee;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+h1 {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  margin: 0 0 6px;
+}
+
+p {
+  font-size: 14px;
+  color: $text-muted;
+  margin: 0 0 10px;
+}
+
+.meta {
+  display: flex;
+  gap: 14px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.visibility {
+  background: #fdf2f8;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+/* Accent backgrounds */
+
+.pink {
+  background: #fbcfe8;
+}
+
+.peach {
+  background: #fed7aa;
+}
+
+.blue {
+  background: #bfdbfe;
+}
+
+.lavender {
+  background: #ddd6fe;
+}
+
+.mint {
+  background: #bbf7d0;
+}
+
+/* Controls */
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.viewToggle {
+  display: flex;
+  border: 1px solid #f3e8ee;
+  border-radius: 12px;
+  overflow: hidden;
+
+  button {
+    background: white;
+    border: none;
+    padding: 8px 10px;
+    cursor: pointer;
+
+    &:hover {
+      background: #fdf2f8;
+    }
+  }
+}
+
+.active {
+  background: #fde7f3;
+}

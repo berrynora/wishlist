@@ -1,39 +1,24 @@
-"use client";
-
-import { useState } from "react";
 import styles from "./WishlistItemCard.module.scss";
-import { AppButton } from "@/components/ui/AppButton";
+import { Button } from "@/components/ui/Button/Button";
+import { useState } from "react";
 
-export function WishlistItemCard({
-  title,
-  price,
-  reserved,
-}: {
-  title: string;
-  price: number;
-  reserved: boolean;
-}) {
-  const [isReserved, setReserved] = useState(reserved);
+export function WishlistItemCard({ item }: any) {
+  const [reserved, setReserved] = useState(item.reserved);
 
   return (
     <div className={styles.card}>
       <div className={styles.image} />
 
-      <div className={styles.info}>
-        <strong>{title}</strong>
-        <span>${price}</span>
+      <div className={styles.content}>
+        <h3>{item.title}</h3>
+        <span className={styles.price}>${item.price}</span>
 
-        {!isReserved ? (
-          <AppButton
-            className={styles.reserve}
-            onClick={() => setReserved(true)}
-          >
-            Reserve
-          </AppButton>
+        {!reserved ? (
+          <Button onClick={() => setReserved(true)}>Reserve</Button>
         ) : (
-          <AppButton variant="secondary" disabled>
+          <Button variant="secondary" disabled>
             Reserved
-          </AppButton>
+          </Button>
         )}
       </div>
     </div>

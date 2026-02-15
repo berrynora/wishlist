@@ -11,7 +11,7 @@ import {
 } from "@/lib/helpers/wishlist-helper";
 
 export function WishlistCard({ wishlist }: { wishlist: Wishlist }) {
-  const router = useRouter(); // ✅ MISSING LINE
+  const router = useRouter();
 
   const accent = accentClass[wishlist.accent_type] ?? "pink";
   const visibility = wishlist.visibility_type;

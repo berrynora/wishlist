@@ -1,83 +1,141 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { Modal } from "@/components/ui/Modal/Modal";
-import { Input } from "@/components/ui/Input/Input";
-import { Select } from "@/components/ui/Select/Select";
 import { Button } from "@/components/ui/Button/Button";
+import { Globe, Users, Lock, Check } from "lucide-react";
+import styles from "./CreateWishlistModal.module.scss";
 
 type Props = {
   open: boolean;
   onClose: () => void;
 };
 
-type FormValues = {
-  name: string;
-  visibility: string;
-};
-
 export function CreateWishlistModal({ open, onClose }: Props) {
-  const { register, handleSubmit, watch, setValue, reset } =
-    useForm<FormValues>({
-      defaultValues: {
-        name: "",
-        visibility: "Public",
-      },
-    });
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [privacy, setPrivacy] = useState<"Public" | "Friends" | "Private">(
+    "Public",
+  );
+  const [color, setColor] = useState("pink");
 
-  const visibility = watch("visibility");
+  const colors = ["pink", "peach", "blue", "lavender", "mint"];
 
-  function onSubmit(values: FormValues) {
-    console.log("Wishlist created:", values);
-    reset();
+  function handleSubmit() {
+    console.log({ name, description, privacy, color });
     onClose();
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Create Wishlist">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        style={{ display: "grid", gap: 16 }}
-      >
+    <Modal open={open} onClose={onClose}>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <div>
+            <h2>Create New Wishlist</h2>
+            <p>Give your wishlist a name and customize its appearance.</p>
+          </div>
+        </div>
+
         {/* Name */}
-        <div style={{ display: "grid", gap: 6 }}>
-          <label style={{ fontSize: 13, color: "#6b7280" }}>
-            Wishlist Name
-          </label>
-
-          <Input
-            placeholder="Birthday 2025"
-            {...register("name", { required: true })}
+        <div className={styles.field}>
+          <label>Wishlist Name</label>
+          <input
+            placeholder="e.g. Birthday Wishes, Home Office Setup"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
 
-        {/* Visibility */}
-        <div style={{ display: "grid", gap: 6 }}>
-          <label style={{ fontSize: 13, color: "#6b7280" }}>Visibility</label>
-
-          <Select
-            value={visibility}
-            onChange={(e) => setValue("visibility", e.target.value)}
-            options={["Public", "Friends only", "Private"]}
+        {/* Description */}
+        <div className={styles.field}>
+          <label>Description (optional)</label>
+          <textarea
+            placeholder="Add a note for your friends..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </div>
 
-        {/* Buttons */}
-        <div
-          style={{
-            marginTop: 10,
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: 10,
-          }}
-        >
-          <Button variant="secondary" type="button" onClick={onClose}>
+        {/* Privacy */}
+        <div className={styles.section}>
+          <label>Privacy</label>
+
+          <div className={styles.privacyOptions}>
+            <PrivacyCard
+              icon={<Globe size={18} />}
+              title="Public"
+              subtitle="Anyone can view"
+              selected={privacy === "Public"}
+              onClick={() => setPrivacy("Public")}
+            />
+
+            <PrivacyCard
+              icon={<Users size={18} />}
+              title="Friends Only"
+              subtitle="Only your friends"
+              selected={privacy === "Friends"}
+              onClick={() => setPrivacy("Friends")}
+            />
+
+            <PrivacyCard
+              icon={<Lock size={18} />}
+              title="Private"
+              subtitle="Only you"
+              selected={privacy === "Private"}
+              onClick={() => setPrivacy("Private")}
+            />
+          </div>
+        </div>
+
+        {/* Colors */}
+        <div className={styles.section}>
+          <label>Cover Color</label>
+
+          <div className={styles.colors}>
+            {colors.map((c) => (
+              <div
+                key={c}
+                className={`${styles.color} ${styles[c]} ${
+                  color === c ? styles.active : ""
+                }`}
+                onClick={() => setColor(c)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className={styles.footer}>
+          <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-
-          <Button type="submit">Create</Button>
+          <Button onClick={handleSubmit} disabled={!name.trim()}>
+            Create Wishlist
+          </Button>
         </div>
-      </form>
+      </div>
     </Modal>
+  );
+}
+
+function PrivacyCard({ icon, title, subtitle, selected, onClick }: any) {
+  return (
+    <div
+      className={`${styles.privacyCard} ${selected ? styles.selected : ""}`}
+      onClick={onClick}
+    >
+      <div className={styles.privacyIcon}>{icon}</div>
+
+      <div>
+        <strong>{title}</strong>
+        <p>{subtitle}</p>
+      </div>
+
+      {selected && (
+        <div className={styles.check}>
+          <Check size={16} />
+        </div>
+      )}
+    </div>
   );
 }
