@@ -11,6 +11,8 @@ import {
 } from "@/lib/helpers/wishlist-helper";
 
 export function WishlistCard({ wishlist }: { wishlist: Wishlist }) {
+  const router = useRouter(); // ✅ MISSING LINE
+
   const accent = accentClass[wishlist.accent_type] ?? "pink";
   const visibility = wishlist.visibility_type;
   const VisibilityIcon = visibilityIcon[visibility];
@@ -22,7 +24,7 @@ export function WishlistCard({ wishlist }: { wishlist: Wishlist }) {
       onClick={() => router.push(`/wishlist/${wishlist.id}`)}
       style={{ cursor: "pointer" }}
     >
-      <div className={`${styles.top} ${styles[wishlist.accent]}`}>
+      <div className={`${styles.top} ${styles[accent]}`}>
         <Gift size={40} className={styles.icon} />
       </div>
 
