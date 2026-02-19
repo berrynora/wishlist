@@ -18,7 +18,7 @@ function copyCookies(from: NextResponse, to: NextResponse) {
 }
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, search } = request.nextUrl;
 
   if (pathname.startsWith("/api") || pathname === "/auth/callback") {
     return NextResponse.next();
@@ -45,13 +45,19 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user && pathname !== "/login") {
-    const redirect = NextResponse.redirect(new URL("/login", request.url));
+    const redirectUrl = new URL("/login", request.url);
+    const returnTo = `${pathname}${search}`;
+    redirectUrl.searchParams.set("redirect_to", returnTo);
+
+    const redirect = NextResponse.redirect(redirectUrl);
     copyCookies(response, redirect);
     return redirect;
   }
 
   if (user && pathname === "/login") {
-    const redirect = NextResponse.redirect(new URL("/home", request.url));
+    const redirectParam = request.nextUrl.searchParams.get("redirect_to");
+    const target = redirectParam || "/home";
+    const redirect = NextResponse.redirect(new URL(target, request.url));
     copyCookies(response, redirect);
     return redirect;
   }

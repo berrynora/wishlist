@@ -11,10 +11,11 @@ import styles from "./AuthForm.module.scss";
 
 type Props = {
   mode: "login" | "register";
-  onLoginSuccess: () => void;
+  redirectTo: string;
+  onLoginSuccess: (target: string) => void;
 };
 
-export function AuthForm({ mode, onLoginSuccess }: Props) {
+export function AuthForm({ mode, redirectTo, onLoginSuccess }: Props) {
   const isLogin = mode === "login";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +39,7 @@ export function AuthForm({ mode, onLoginSuccess }: Props) {
     try {
       if (isLogin) {
         await loginWithEmail(email, password);
-        onLoginSuccess();
+        onLoginSuccess(redirectTo);
       } else {
         await registerWithEmail(email, password);
         setNotice("Account created. Check your inbox to confirm your email.");
@@ -56,7 +57,7 @@ export function AuthForm({ mode, onLoginSuccess }: Props) {
     setGoogleLoading(true);
 
     try {
-      await loginWithGoogle();
+      await loginWithGoogle(redirectTo);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google login failed");
       setGoogleLoading(false);

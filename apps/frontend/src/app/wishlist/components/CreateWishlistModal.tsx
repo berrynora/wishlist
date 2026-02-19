@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
+import { useCreateWishlist } from "@/hooks/use-wishlists";
+import { WishlistAccent, WishlistVisibility } from "@/types/wishlist";
 import { Globe, Users, Lock, Check } from "lucide-react";
 import styles from "./CreateWishlistModal.module.scss";
 
@@ -12,18 +14,58 @@ type Props = {
 };
 
 export function CreateWishlistModal({ open, onClose }: Props) {
+  const colors = ["pink", "peach", "blue", "lavender", "mint"] as const;
+  type ColorOption = (typeof colors)[number];
+  type PrivacyOption = "Public" | "Friends" | "Private";
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [privacy, setPrivacy] = useState<"Public" | "Friends" | "Private">(
-    "Public",
-  );
-  const [color, setColor] = useState("pink");
+  const [privacy, setPrivacy] = useState<PrivacyOption>("Public");
+  const [color, setColor] = useState<ColorOption>("pink");
+  const [eventDate, setEventDate] = useState("");
 
-  const colors = ["pink", "peach", "blue", "lavender", "mint"];
+  const { mutate, isPending } = useCreateWishlist();
+
+  const privacyToVisibility: Record<PrivacyOption, WishlistVisibility> = {
+    Public: WishlistVisibility.Public,
+    Friends: WishlistVisibility.FriendsOnly,
+    Private: WishlistVisibility.Private,
+  };
+
+  const colorToAccent: Record<ColorOption, WishlistAccent> = {
+    pink: WishlistAccent.Pink,
+    peach: WishlistAccent.Peach,
+    blue: WishlistAccent.Blue,
+    lavender: WishlistAccent.Lavender,
+    mint: WishlistAccent.Mint,
+  };
+
+  function resetForm() {
+    setName("");
+    setDescription("");
+    setPrivacy("Public");
+    setColor("pink");
+    setEventDate("");
+  }
 
   function handleSubmit() {
-    console.log({ name, description, privacy, color });
-    onClose();
+    if (!name.trim() || isPending) return;
+
+    mutate(
+      {
+        title: name.trim(),
+        description: description.trim() || undefined,
+        visibility: privacyToVisibility[privacy],
+        accent: colorToAccent[color],
+        event_date: eventDate ? new Date(eventDate) : undefined,
+      },
+      {
+        onSuccess: () => {
+          resetForm();
+          onClose();
+        },
+      },
+    );
   }
 
   return (
@@ -55,6 +97,16 @@ export function CreateWishlistModal({ open, onClose }: Props) {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
+
+          {/* Event Date */}
+          <div className={styles.field}>
+            <label>Event Date (optional)</label>
+            <input
+              type="date"
+              value={eventDate}
+              onChange={(e) => setEventDate(e.target.value)}
+            />
+          </div>
 
         {/* Privacy */}
         <div className={styles.section}>
@@ -109,8 +161,8 @@ export function CreateWishlistModal({ open, onClose }: Props) {
           <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!name.trim()}>
-            Create Wishlist
+          <Button onClick={handleSubmit} disabled={!name.trim() || isPending}>
+            {isPending ? "Creating..." : "Create Wishlist"}
           </Button>
         </div>
       </div>

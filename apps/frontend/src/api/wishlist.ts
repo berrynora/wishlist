@@ -57,7 +57,8 @@ export async function getFriendsWishlistsDiscover(
 export async function createWishlist({
   title,
   description,
-  visibility = WishlistVisibility.Private,
+  visibility = WishlistVisibility.FriendsOnly,
+  event_date,
   imageUrl,
   accent = WishlistAccent.Pink,
 }: CreateWishlistParams): Promise<Wishlist> {
@@ -77,6 +78,7 @@ export async function createWishlist({
       description,
       visibility_type: visibility,
       image_url: imageUrl,
+      event_date: event_date,
       accent_type: accent,
     })
     .select()
@@ -120,4 +122,24 @@ export async function deleteWishlist(wishlistId: string): Promise<void> {
     .eq("id", wishlistId);
 
   if (error) throw error;
+}
+
+export async function getWishlistById(
+  wishlistId: string,
+): Promise<Wishlist> {
+  const {
+    data: { session },
+  } = await supabaseBrowser.auth.getSession();
+
+  if (!session?.user) throw new Error("Not authenticated");
+
+  const { data, error } = await supabaseBrowser
+    .from("wishlist")
+    .select("*")
+    .eq("id", wishlistId)
+    .single();
+
+  if (error) throw error;
+
+  return data;
 }

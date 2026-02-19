@@ -5,6 +5,7 @@ export interface CreateWishlistParams {
   description?: string;
   visibility?: WishlistVisibility;
   imageUrl?: string;
+  event_date?: Date;
   accent?: WishlistAccent;
 }
 
@@ -13,6 +14,7 @@ export interface UpdateWishlistParams {
   description?: string;
   visibility?: WishlistVisibility;
   imageUrl?: string;
+  event_date?: Date;
   accent?: WishlistAccent;
 }
 

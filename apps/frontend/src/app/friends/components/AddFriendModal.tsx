@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
 import { Copy } from "lucide-react";
+import { supabaseBrowser } from "@/lib/supabase-browser";
 import styles from "./AddFriendModal.module.scss";
 
 type Props = {
@@ -12,11 +13,32 @@ type Props = {
 };
 
 export function AddFriendModal({ open, onClose }: Props) {
-  const inviteLink = "https://wishly.app/add/sarah_m";
+  const [origin, setOrigin] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
   const [username, setUsername] = useState("");
   const [copied, setCopied] = useState(false);
 
+  const inviteLink = useMemo(() => {
+    if (!origin || !userId) return "";
+    return `${origin}/home?friendInvite=${userId}`;
+  }, [origin, userId]);
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+
+    supabaseBrowser.auth
+      .getUser()
+      .then(({ data }) => {
+        const id = data.user?.id;
+        if (id) setUserId(id);
+      })
+      .catch(() => {
+        setUserId("");
+      });
+  }, []);
+
   function handleCopy() {
+    if (!inviteLink) return;
     navigator.clipboard.writeText(inviteLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
@@ -31,8 +53,9 @@ export function AddFriendModal({ open, onClose }: Props) {
     <Modal open={open} onClose={onClose}>
       <div className={styles.container}>
         <div className={styles.header}>
-          <h2>Invite Friends</h2>
-          <p>Share your unique link or search for friends on Wishly.</p>
+          <p className={styles.eyebrow}>Friends</p>
+          <h2>Invite friends</h2>
+          <p>Share your personal invite link or look up a friend by handle.</p>
         </div>
 
         {/* Invite Link */}
@@ -40,9 +63,13 @@ export function AddFriendModal({ open, onClose }: Props) {
           <label>Your invite link</label>
 
           <div className={styles.linkWrapper}>
-            <input value={inviteLink} readOnly />
+            <input value={inviteLink || "Loading..."} readOnly />
 
-            <button className={styles.copyBtn} onClick={handleCopy}>
+            <button
+              className={styles.copyBtn}
+              onClick={handleCopy}
+              disabled={!inviteLink}
+            >
               <Copy size={16} />
             </button>
           </div>

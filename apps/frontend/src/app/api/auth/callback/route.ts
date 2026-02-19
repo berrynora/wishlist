@@ -14,8 +14,11 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
-
-  const response = NextResponse.redirect(new URL("/home", request.url));
+  const redirectParam = requestUrl.searchParams.get("redirect_to");
+  const fallback = new URL("/home", request.url);
+  const response = NextResponse.redirect(
+    redirectParam ? new URL(redirectParam, request.url) : fallback,
+  );
 
   if (!code) {
     return NextResponse.redirect(new URL("/login", request.url));

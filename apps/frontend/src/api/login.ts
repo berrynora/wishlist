@@ -30,11 +30,13 @@ export async function logout(): Promise<void> {
   if (error) throw error;
 }
 
-export async function loginWithGoogle(): Promise<void> {
+export async function loginWithGoogle(redirectTo?: string): Promise<void> {
+  const callback = `${window.location.origin}/api/auth/callback${redirectTo ? `?redirect_to=${encodeURIComponent(redirectTo)}` : ""}`;
+
   const { error } = await supabaseBrowser.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${window.location.origin}/api/auth/callback`,
+      redirectTo: callback,
       queryParams: {
         prompt: "select_account",
       },

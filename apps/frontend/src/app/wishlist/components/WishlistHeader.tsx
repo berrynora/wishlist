@@ -4,20 +4,32 @@ import styles from "./WishlistHeader.module.scss";
 import { Button } from "@/components/ui/Button/Button";
 import { Grid, List } from "lucide-react";
 import { useState } from "react";
+import { Wishlist } from "@/types/wishlist";
+import { accentClass, visibilityLabel } from "@/lib/helpers/wishlist-helper";
 
-export function WishlistHeader({ wishlist }: any) {
+type Props = {
+  wishlist: Wishlist;
+  onAddItem?: () => void;
+};
+
+export function WishlistHeader({ wishlist, onAddItem }: Props) {
   const [view, setView] = useState<"grid" | "list">("grid");
 
+  const accent = accentClass[wishlist.accent_type] ?? "pink";
+  const visibility = visibilityLabel[wishlist.visibility_type] ?? "Private";
+  const itemsCount = wishlist.itemsCount ?? 0;
+  const description = wishlist.description ?? "";
+
   return (
-    <div className={`${styles.header} ${styles[wishlist.accent]}`}>
+    <div className={`${styles.header} ${styles[accent]}`}>
       <div className={styles.inner}>
         <div>
           <h1>{wishlist.title}</h1>
-          <p>{wishlist.description}</p>
+          {description && <p>{description}</p>}
 
           <div className={styles.meta}>
-            <span className={styles.visibility}>{wishlist.visibility}</span>
-            <span>{wishlist.itemsCount} items</span>
+            <span className={styles.visibility}>{visibility}</span>
+            <span>{itemsCount} items</span>
           </div>
         </div>
 
@@ -38,7 +50,7 @@ export function WishlistHeader({ wishlist }: any) {
             </button>
           </div>
 
-          <Button>Add Item</Button>
+          <Button onClick={onAddItem}>Add Item</Button>
         </div>
       </div>
     </div>

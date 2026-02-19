@@ -6,6 +6,7 @@ import {
   updateWishlist,
   deleteWishlist,
   getFriendsWishlistsDiscover,
+  getWishlistById,
 } from '@/api/wishlist';
 import type {
   CreateWishlistParams,
@@ -19,6 +20,7 @@ export const wishlistKeys = {
   friends: (params?: PaginationParams) => [...wishlistKeys.all, 'friends', params] as const,
   friend: (userId: string, params?: PaginationParams) => 
     [...wishlistKeys.all, 'friend', userId, params] as const,
+   detail: (id: string) => [...wishlistKeys.all, 'detail', id] as const,
 };
 
 // Queries
@@ -74,5 +76,13 @@ export function useDeleteWishlist() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
     },
+  });
+}
+
+export function useWishlistById(wishlistId: string) {
+  return useQuery({
+    queryKey: wishlistKeys.detail(wishlistId),
+    queryFn: () => getWishlistById(wishlistId),
+    enabled: !!wishlistId,
   });
 }
