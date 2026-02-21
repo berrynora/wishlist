@@ -14,9 +14,9 @@ export function AppShell({ children }: Props) {
   const hideTopNav = pathname === "/login";
 
   return (
-    <>
+    <Providers>
       {!hideTopNav && <TopNav />}
-      <Providers>{children}</Providers>
-    </>
+      {children}
+    </Providers>
   );
 }

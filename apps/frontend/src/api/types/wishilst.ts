@@ -46,3 +46,11 @@ export type DiscoverSection = {
   date?: string;
   items: DiscoverItem[];
 };
+
+export interface FriendUpcomingWishlist {
+  friend_name: string;
+  wishlist_title: string;
+  event_date: string;
+  wishlist_id: string;
+  friend_id: string;
+}

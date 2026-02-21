@@ -1,7 +1,7 @@
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import { Wishlist, WishlistAccent, WishlistVisibility } from "@/types/wishlist";
 import { getWishlists } from "@/api/helpers/wishlist-helper";
-import { CreateWishlistParams, UpdateWishlistParams,DiscoverSection } from "./types/wishilst";
+import { CreateWishlistParams, UpdateWishlistParams,DiscoverSection, FriendUpcomingWishlist } from "./types/wishilst";
 
 export async function getMyWishlists(
   params: PaginationParams = {},
@@ -142,4 +142,23 @@ export async function getWishlistById(
   if (error) throw error;
 
   return data;
+}
+
+export async function getFriendsUpcomingWishlists(): Promise<FriendUpcomingWishlist[]> {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabaseBrowser.auth.getSession();
+
+  if (sessionError) throw sessionError;
+  if (!session?.user) throw new Error("Not authenticated");
+
+  const { data, error } = await supabaseBrowser
+    .rpc('get_friends_upcoming_wishlists', {
+      p_user_id: session.user.id
+    });
+
+  if (error) throw error;
+
+  return data || [];
 }

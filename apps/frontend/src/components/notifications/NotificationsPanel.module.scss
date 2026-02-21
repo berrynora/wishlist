@@ -30,6 +30,7 @@
   padding: 10px;
   border-radius: $radius-md;
   transition: background 0.2s ease;
+  cursor: pointer;
 
   &:hover {
     background: #f9fafb;
@@ -43,6 +44,15 @@
   span {
     font-size: 12px;
     color: $text-muted;
+  }
+}
+
+.unread {
+  background: #f8fafc;
+
+  p {
+    font-weight: 700;
+    color: $text;
   }
 }
 

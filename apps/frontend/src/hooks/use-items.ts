@@ -6,6 +6,7 @@ import {
 import type {
   CreateItemParams
 } from '@/api/types/item';
+import {wishlistKeys} from './use-wishlists';
 
 // Query Keys
 export const itemKeys = {
@@ -31,7 +32,10 @@ export function useCreateItem() {
     mutationFn: (params: CreateItemParams) => createItem(params),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ 
-        queryKey: itemKeys.wishlist(data.wishlist_id) 
+        queryKey: itemKeys.wishlist(data.wishlist_id),
+      });
+      queryClient.invalidateQueries({ 
+        queryKey: wishlistKeys.my(),
       });
     },
   });

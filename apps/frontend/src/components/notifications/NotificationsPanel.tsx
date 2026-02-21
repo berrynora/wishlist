@@ -2,39 +2,54 @@
 
 import styles from "./NotificationsPanel.module.scss";
 import { Button } from "@/components/ui/Button/Button";
-
-type Notification = {
-  id: string;
-  text: string;
-  date: string;
-};
+import { Notification } from "@/types";
 
 type Props = {
   notifications: Notification[];
-  onClear: () => void;
+  onClear?: () => void;
+  isLoading?: boolean;
+  onMarkRead?: (id: string) => void;
 };
 
-export function NotificationsPanel({ notifications, onClear }: Props) {
+export function NotificationsPanel({
+  notifications,
+  onClear,
+  isLoading,
+  onMarkRead,
+}: Props) {
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
         <strong>Notifications</strong>
 
-        {notifications.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={onClear}>
+        {notifications.length > 0 && onClear && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClear}
+            disabled={isLoading}
+          >
             Clear
           </Button>
         )}
       </div>
 
-      {notifications.length === 0 ? (
+      {isLoading ? (
+        <div className={styles.empty}>Loading notifications...</div>
+      ) : notifications.length === 0 ? (
         <div className={styles.empty}>No notifications</div>
       ) : (
         <ul className={styles.list}>
           {notifications.map((n) => (
-            <li key={n.id} className={styles.item}>
+            <li
+              key={n.id}
+              className={`${styles.item} ${!n.is_read ? styles.unread : ""}`}
+              onClick={() => {
+                if (!n.is_read && onMarkRead) onMarkRead(n.id);
+              }}
+            >
               <p>{n.text}</p>
-              <span>{n.date}</span>
+              <span>{new Date(n.created_at).toLocaleString()}</span>
             </li>
           ))}
         </ul>
