@@ -1,94 +1,191 @@
 @use "@/styles/variables" as *;
 
 .header {
-  padding: 40px 24px 28px;
-  border-bottom: 1px solid #f3e8ee;
+  border-bottom: 1px solid $border;
 }
 
-.inner {
+/* ===== BANNER ===== */
+
+.banner {
+  height: 140px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bannerInner {
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
+  padding: 20px 24px;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.back {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: $text;
+  transition: all 0.25s $ease-out;
+
+  &:hover {
+    background: white;
+    transform: scale(1.08);
+    box-shadow: $shadow-sm;
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.bannerIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  color: rgba(0, 0, 0, 0.35);
+  position: absolute;
+  bottom: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 3px solid white;
+  box-shadow: $shadow-md;
+}
+
+/* Accent banner colors */
+
+.pink {
+  background: linear-gradient(135deg, #fbcfe8, #f9a8d4);
+}
+.peach {
+  background: linear-gradient(135deg, #fed7aa, #fdba74);
+}
+.blue {
+  background: linear-gradient(135deg, #bfdbfe, #93c5fd);
+}
+.lavender {
+  background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+}
+.mint {
+  background: linear-gradient(135deg, #bbf7d0, #86efac);
+}
+
+/* ===== BODY ===== */
+
+.body {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 44px 24px 24px;
+}
+
+.titleRow {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
+  margin-bottom: 16px;
+}
 
+.titleGroup {
   h1 {
-  font-family: var(--font-serif);
-  font-size: 28px;
-  margin: 0 0 6px;
+    font-family: var(--font-serif);
+    font-size: 26px;
+    margin: 0;
+    line-height: 1.3;
   }
+}
 
-p {
+.description {
   font-size: 14px;
   color: $text-muted;
-  margin: 0 0 10px;
-}
-}
-
-
-
-.meta {
-  display: flex;
-  gap: 14px;
-  font-size: 13px;
-  color: #6b7280;
+  margin: 6px 0 0;
+  line-height: 1.5;
+  max-width: 560px;
 }
 
-.visibility {
-  background: #fdf2f8;
-  padding: 4px 10px;
-  border-radius: 999px;
-}
+/* ===== OWNER ACTIONS ===== */
 
-/* Accent backgrounds */
-
-.pink {
-  background: #fbcfe8;
-}
-
-.peach {
-  background: #fed7aa;
-}
-
-.blue {
-  background: #bfdbfe;
-}
-
-.lavender {
-  background: #ddd6fe;
-}
-
-.mint {
-  background: #bbf7d0;
-}
-
-/* Controls */
-
-.controls {
+.ownerActions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
-.viewToggle {
-  display: flex;
-  border: 1px solid #f3e8ee;
-  border-radius: 12px;
-  overflow: hidden;
+.iconBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid $border-light;
+  background: white;
+  color: $text-muted;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.25s $ease-out;
 
-  button {
-    background: white;
-    border: none;
-    padding: 8px 10px;
-    cursor: pointer;
+  &:hover {
+    border-color: $brand;
+    color: $brand;
+    transform: scale(1.08);
+  }
 
-    &:hover {
-      background: #fdf2f8;
-    }
+  &:active {
+    transform: scale(0.92);
   }
 }
 
-.active {
-  background: #fde7f3;
+.dangerBtn {
+  &:hover {
+    border-color: #b91c1c;
+    color: #b91c1c;
+    background: #fef2f2;
+  }
+}
+
+/* ===== BADGES ===== */
+
+.badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.visibilityBadge,
+.countBadge,
+.dateBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: $radius-pill;
+  font-weight: 500;
+}
+
+.visibilityBadge {
+  background: #fdf2f8;
+  color: $brand;
+}
+
+.countBadge {
+  background: #f3f4f6;
+  color: $text-muted;
+}
+
+.dateBadge {
+  background: #eff6ff;
+  color: #2563eb;
 }

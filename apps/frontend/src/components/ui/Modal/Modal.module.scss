@@ -7,6 +7,8 @@
   display: grid;
   place-items: center;
   z-index: 50;
+  animation: overlayIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(2px);
 }
 
 .modal {
@@ -15,6 +17,8 @@
   border-radius: $radius-lg;
   padding: 20px;
   border: 1px solid $border;
+  animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
 }
 
 .title {

@@ -1,11 +1,22 @@
 "use client";
 
+import { useState } from "react";
 import { WishlistCard } from "./WishlistCard";
 import styles from "./WishlistGrid.module.scss";
 import { useMyWishlists } from "@/hooks/use-wishlists";
+import { Pagination } from "@/components/ui/Pagination/Pagination";
+
+const PAGE_SIZE = 8;
 
 export function WishlistGrid() {
-  const { data, isLoading, isError } = useMyWishlists();
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isError } = useMyWishlists({
+    skip: (page - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
+  });
+
+  const wishlists = data ?? [];
+  const showPagination = wishlists.length === PAGE_SIZE || page > 1;
 
   return (
     <div>
@@ -13,13 +24,21 @@ export function WishlistGrid() {
       <div className={styles.grid}>
         {isLoading && <p>Loading...</p>}
         {isError && <p>Failed to load wishlists.</p>}
-        {!isLoading && !isError && (data?.length ?? 0) === 0 && (
+        {!isLoading && !isError && wishlists.length === 0 && (
           <p>No wishlists yet.</p>
         )}
-        {(data ?? []).map((w) => (
+        {wishlists.map((w) => (
           <WishlistCard key={w.id} wishlist={w} />
         ))}
       </div>
+
+      {showPagination && (
+        <Pagination
+          page={page}
+          total={wishlists.length < PAGE_SIZE ? page : page + 1}
+          onChange={setPage}
+        />
+      )}
     </div>
   );
 }

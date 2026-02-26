@@ -5,29 +5,172 @@
   border-radius: 16px;
   border: 1px solid #f3e8ee;
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
+  cursor: pointer;
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+    border-color: #e8dce2;
+  }
+
+  &:active {
+    transform: translateY(-2px);
   }
 }
 
 .image {
   height: 160px;
   background: #f3f4f6;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #9ca3af;
+  font-size: 13px;
 }
 
 .content {
   padding: 14px;
   display: grid;
   gap: 6px;
+
   h3 {
-  margin: 0;
-  font-size: 15px;
-}
+    margin: 0;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .price {
   font-size: 14px;
-  color: #c0267e;
+  font-weight: 600;
+  color: $brand;
+}
+
+.description {
+  font-size: 13px;
+  color: $text-muted;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.reserveBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid #f3e8ee;
+  background: white;
+  color: $brand;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover:not(:disabled) {
+    background: #fde7f3;
+    transform: scale(1.1);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.92);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.reserved {
+  background: #fde7f3;
+  color: $brand;
+  border-color: $brand;
+}
+
+.linkBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid $border-light;
+  background: white;
+  color: $text-muted;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    border-color: $brand;
+    color: $brand;
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.editBtn,
+.deleteBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid $border-light;
+  background: white;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.editBtn {
+  color: $text-muted;
+
+  &:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+  }
+}
+
+.deleteBtn {
+  color: $text-muted;
+
+  &:hover {
+    border-color: #b91c1c;
+    color: #b91c1c;
+  }
 }

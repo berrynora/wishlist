@@ -8,6 +8,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(192, 38, 126, 0.08);
+  }
 
   strong {
     font-size: 14px;

@@ -1,12 +1,34 @@
 import styles from "./WishlistItemsGrid.module.scss";
 import { WishlistItemCard } from "./WishlistItemCard";
+import { Item } from "@/types/item";
 
-export function WishlistItemsGrid({ items }: any) {
+type Props = {
+  items: Item[];
+  isOwner?: boolean;
+  onReserve?: (id: string) => void;
+  onDelete?: (id: string) => void;
+  onEdit?: (item: Item) => void;
+};
+
+export function WishlistItemsGrid({
+  items,
+  isOwner = false,
+  onReserve,
+  onDelete,
+  onEdit,
+}: Props) {
   return (
     <div className={styles.wrapper}>
       <div className={styles.grid}>
-        {items.map((item: any) => (
-          <WishlistItemCard key={item.id} item={item} />
+        {items.map((item) => (
+          <WishlistItemCard
+            key={item.id}
+            item={item}
+            isOwner={isOwner}
+            onReserve={onReserve}
+            onDelete={onDelete}
+            onEdit={onEdit}
+          />
         ))}
       </div>
     </div>

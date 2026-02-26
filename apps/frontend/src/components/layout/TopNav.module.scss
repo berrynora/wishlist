@@ -59,6 +59,11 @@
   color: #374151;
 
   overflow: hidden;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #111827;
+  }
 }
 
 .icon {
@@ -89,6 +94,7 @@
 }
 
 .search {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -97,6 +103,14 @@
   border-radius: 999px;
   border: 1px solid #f3e8ee;
   background: white;
+  transition:
+    border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:focus-within {
+    border-color: #e8dce2;
+    box-shadow: 0 0 0 3px rgba(192, 38, 126, 0.08);
+  }
 
   input {
     border: none;
@@ -108,13 +122,82 @@
 
   svg {
     color: #9ca3af;
+    transition: color 0.2s ease;
   }
+
+  &:focus-within svg {
+    color: #c0267e;
+  }
+}
+
+.searchDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #f3e8ee;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  max-height: 280px;
+  overflow-y: auto;
+  animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.searchItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    padding-left 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  strong {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  span {
+    font-size: 12px;
+    color: #9ca3af;
+  }
+
+  &:hover {
+    background: #fdf2f8;
+    padding-left: 18px;
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #f9f0f5;
+  }
+}
+
+.searchEmpty {
+  padding: 14px;
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
 }
 
 .notification {
   position: relative;
   cursor: pointer;
   color: #6b7280;
+  transition:
+    color 0.2s ease,
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    color: #c0267e;
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
 }
 
 .badge {

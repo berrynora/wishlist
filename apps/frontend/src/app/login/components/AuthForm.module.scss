@@ -18,6 +18,16 @@
   gap: 8px;
   font-size: 14px;
   cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover:not(:disabled) {
+    border-color: #d1d5db;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
 }
 
 .googleButton:disabled {
@@ -59,6 +69,15 @@
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 14px;
+  outline: none;
+  transition:
+    border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:focus {
+    border-color: #c0267e;
+    box-shadow: 0 0 0 3px rgba(192, 38, 126, 0.08);
+  }
 }
 
 .submit {
@@ -71,6 +90,16 @@
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover:not(:disabled) {
+    background: darken(#c0267e, 6%);
+    box-shadow: 0 4px 12px rgba(192, 38, 126, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
 }
 
 .submit:disabled {

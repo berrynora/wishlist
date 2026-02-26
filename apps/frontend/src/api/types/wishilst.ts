@@ -35,7 +35,12 @@ export type DiscoverItem = {
   price: number;
   store: string;
   image: string;
+  image_url?: string | null;
+  url?: string | null;
+  description?: string | null;
   priority?: "Low" | "Medium" | "High";
+  status?: number;
+  reserved_by?: string | null;
 };
 
 export type DiscoverSection = {
@@ -44,6 +49,8 @@ export type DiscoverSection = {
   username: string;
   wishlist: string;
   date?: string;
+  friend_id?: string;
+  wishlist_id?: string;
   items: DiscoverItem[];
 };
 

@@ -1,14 +1,23 @@
+"use client";
+
+import Link from "next/link";
 import styles from "./DiscoverSection.module.scss";
 import { DiscoverItemCard } from "./DiscoverItemCard";
 import { DiscoverSection as Section } from "@/api/types/wishilst";
+
+type Props = Section & {
+  onReserve?: (itemId: string) => void;
+};
 
 export function DiscoverSection({
   owner,
   username,
   wishlist,
   date,
+  friend_id,
   items,
-}: Section) {
+  onReserve,
+}: Props) {
   return (
     <section className={styles.section}>
       <header>
@@ -20,12 +29,18 @@ export function DiscoverSection({
           </span>
         </div>
 
-        <button>View all</button>
+        {friend_id ? (
+          <Link href={`/friends/${friend_id}`} className={styles.viewAll}>
+            View all
+          </Link>
+        ) : (
+          <span className={styles.viewAll}>View all</span>
+        )}
       </header>
 
       <div className={styles.grid}>
         {items.map((item) => (
-          <DiscoverItemCard key={item.id} {...item} />
+          <DiscoverItemCard key={item.id} {...item} onReserve={onReserve} />
         ))}
       </div>
     </section>

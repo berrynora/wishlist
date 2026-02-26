@@ -2,11 +2,26 @@
 
 import styles from "./DiscoverFilters.module.scss";
 
-export function DiscoverFilters() {
+type Props = {
+  active: "wishlists" | "reserved";
+  onChange: (v: "wishlists" | "reserved") => void;
+};
+
+export function DiscoverFilters({ active, onChange }: Props) {
   return (
     <div className={styles.filters}>
-      <button className={styles.active}>All Wishlists</button>
-      <button>Reserved</button>
+      <button
+        className={active === "wishlists" ? styles.active : ""}
+        onClick={() => onChange("wishlists")}
+      >
+        All Wishlists
+      </button>
+      <button
+        className={active === "reserved" ? styles.active : ""}
+        onClick={() => onChange("reserved")}
+      >
+        Reserved
+      </button>
     </div>
   );
 }

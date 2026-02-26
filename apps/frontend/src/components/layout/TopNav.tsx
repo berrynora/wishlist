@@ -2,11 +2,13 @@
 
 import styles from "./TopNav.module.scss";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Gift, Users, Heart, Search } from "lucide-react";
 import { ProfileMenu } from "../profile/ProfileMenu";
 import { NotificationsMenu } from "../notifications/NotificationsMenu";
+import { useSearchWishlists } from "@/hooks/use-wishlists";
 
 const navItems = [
   { label: "My Wishlists", href: "/home", icon: <Gift size={16} /> },
@@ -16,6 +18,28 @@ const navItems = [
 
 export function TopNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [showResults, setShowResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowResults(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const { data: results = [] } = useSearchWishlists(debouncedQuery);
 
   return (
     <header className={styles.header}>
@@ -53,9 +77,40 @@ export function TopNav() {
         </nav>
 
         <div className={styles.right}>
-          <div className={styles.search}>
+          <div className={styles.search} ref={searchRef}>
             <Search size={16} />
-            <input placeholder="Search wishlists..." />
+            <input
+              placeholder="Search wishlists..."
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setShowResults(true);
+              }}
+              onFocus={() => query && setShowResults(true)}
+            />
+
+            {showResults && debouncedQuery && (
+              <div className={styles.searchDropdown}>
+                {results.length === 0 ? (
+                  <div className={styles.searchEmpty}>No wishlists found</div>
+                ) : (
+                  results.map((w) => (
+                    <div
+                      key={w.id}
+                      className={styles.searchItem}
+                      onClick={() => {
+                        router.push(`/wishlist/${w.id}`);
+                        setQuery("");
+                        setShowResults(false);
+                      }}
+                    >
+                      <strong>{w.title}</strong>
+                      <span>{w.itemsCount ?? 0} items</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
 
           <NotificationsMenu />

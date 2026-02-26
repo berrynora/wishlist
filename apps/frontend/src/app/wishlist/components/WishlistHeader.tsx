@@ -2,55 +2,102 @@
 
 import styles from "./WishlistHeader.module.scss";
 import { Button } from "@/components/ui/Button/Button";
-import { Grid, List } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Calendar, Gift, Pencil, Plus, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Wishlist } from "@/types/wishlist";
-import { accentClass, visibilityLabel } from "@/lib/helpers/wishlist-helper";
+import {
+  accentClass,
+  visibilityLabel,
+  visibilityIcon,
+} from "@/lib/helpers/wishlist-helper";
 
 type Props = {
   wishlist: Wishlist;
   onAddItem?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  isOwner?: boolean;
 };
 
-export function WishlistHeader({ wishlist, onAddItem }: Props) {
-  const [view, setView] = useState<"grid" | "list">("grid");
+export function WishlistHeader({
+  wishlist,
+  onAddItem,
+  onEdit,
+  onDelete,
+  isOwner = false,
+}: Props) {
+  const router = useRouter();
 
   const accent = accentClass[wishlist.accent_type] ?? "pink";
   const visibility = visibilityLabel[wishlist.visibility_type] ?? "Private";
+  const VisibilityIcon = visibilityIcon[wishlist.visibility_type];
   const itemsCount = wishlist.itemsCount ?? 0;
   const description = wishlist.description ?? "";
+  const eventDate = (wishlist as Wishlist & { event_date?: string }).event_date;
 
   return (
-    <div className={`${styles.header} ${styles[accent]}`}>
-      <div className={styles.inner}>
-        <div>
-          <h1>{wishlist.title}</h1>
-          {description && <p>{description}</p>}
+    <div className={styles.header}>
+      <div className={`${styles.banner} ${styles[accent]}`}>
+        <div className={styles.bannerInner}>
+          <button className={styles.back} onClick={() => router.push("/home")}>
+            <ArrowLeft size={18} />
+          </button>
 
-          <div className={styles.meta}>
-            <span className={styles.visibility}>{visibility}</span>
-            <span>{itemsCount} items</span>
+          <div className={styles.bannerIcon}>
+            <Gift size={32} />
           </div>
         </div>
+      </div>
 
-        <div className={styles.controls}>
-          <div className={styles.viewToggle}>
-            <button
-              className={view === "grid" ? styles.active : ""}
-              onClick={() => setView("grid")}
-            >
-              <Grid size={16} />
-            </button>
-
-            <button
-              className={view === "list" ? styles.active : ""}
-              onClick={() => setView("list")}
-            >
-              <List size={16} />
-            </button>
+      <div className={styles.body}>
+        <div className={styles.titleRow}>
+          <div className={styles.titleGroup}>
+            <h1>{wishlist.title}</h1>
+            {description && <p className={styles.description}>{description}</p>}
           </div>
 
-          <Button onClick={onAddItem}>Add Item</Button>
+          {isOwner && (
+            <div className={styles.ownerActions}>
+              <Button size="sm" onClick={onAddItem}>
+                <Plus size={14} />
+                <span>Add Item</span>
+              </Button>
+              <button
+                className={styles.iconBtn}
+                onClick={onEdit}
+                title="Edit wishlist"
+              >
+                <Pencil size={15} />
+              </button>
+              <button
+                className={`${styles.iconBtn} ${styles.dangerBtn}`}
+                onClick={onDelete}
+                title="Delete wishlist"
+              >
+                <Trash2 size={15} />
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className={styles.badges}>
+          <span className={styles.visibilityBadge}>
+            {VisibilityIcon && <VisibilityIcon size={13} />}
+            {visibility}
+          </span>
+          <span className={styles.countBadge}>
+            {itemsCount} {itemsCount === 1 ? "item" : "items"}
+          </span>
+          {eventDate && (
+            <span className={styles.dateBadge}>
+              <Calendar size={13} />
+              {new Date(eventDate).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
+          )}
         </div>
       </div>
     </div>

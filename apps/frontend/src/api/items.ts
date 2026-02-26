@@ -1,8 +1,7 @@
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import { Item } from "@/types/item";
-import { CreateItemParams } from "./types/item";
+import { CreateItemParams, UpdateItemParams } from "./types/item";
 import { getItems } from "./helpers/item-helper";
-
 
 export async function createItem({
   wishlist_id,
@@ -47,4 +46,60 @@ export async function getWishlistItems(
   params: PaginationParams = {},
 ): Promise<Item[]> {
   return getItems((query) => query.eq("wishlist_id", wishlistId), params);
+}
+
+export async function updateItem(
+  itemId: string,
+  updates: UpdateItemParams,
+): Promise<Item> {
+  const { data, error } = await supabaseBrowser
+    .from("item")
+    .update(updates)
+    .eq("id", itemId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteItem(itemId: string): Promise<void> {
+  const { error } = await supabaseBrowser
+    .from("item")
+    .delete()
+    .eq("id", itemId);
+
+  if (error) throw error;
+}
+
+export async function reserveItem(itemId: string): Promise<Item> {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabaseBrowser.auth.getSession();
+
+  if (sessionError) throw sessionError;
+  if (!session?.user) throw new Error("Not authenticated");
+
+  const { data, error } = await supabaseBrowser
+    .from("item")
+    .update({ status: 1, reserved_by: session.user.id })
+    .eq("id", itemId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function unreserveItem(itemId: string): Promise<Item> {
+  const { data, error } = await supabaseBrowser
+    .from("item")
+    .update({ status: 0, reserved_by: null })
+    .eq("id", itemId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 }
