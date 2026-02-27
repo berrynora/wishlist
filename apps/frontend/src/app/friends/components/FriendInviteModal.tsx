@@ -22,44 +22,21 @@ type Props = {
 };
 
 export function FriendInviteModal({ open, userId, onClose }: Props) {
-  const [selfId, setSelfId] = useState<string>("");
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const hasTriggered = useRef(false);
+  const selfIdRef = useRef<string>("");
 
   const sendRequest = useSendFriendRequest();
 
-  useEffect(() => {
-    if (!open) {
-      setStatus("idle");
-      setErrorMessage("");
-      hasTriggered.current = false;
-      return;
-    }
-
-    supabaseBrowser.auth
-      .getUser()
-      .then(({ data }) => {
-        const id = data.user?.id ?? "";
-        setSelfId(id);
-        if (!id) setStatus("unauth");
-      })
-      .catch(() => {
-        setSelfId("");
-        setStatus("unauth");
-      });
-  }, [open]);
-
   const sendInvite = () => {
-    if (!userId || !selfId) return;
-    hasTriggered.current = true;
-    setStatus("idle");
+    if (!userId || !selfIdRef.current) return;
     setErrorMessage("");
 
     sendRequest.mutate(userId, {
       onSuccess: () => setStatus("sent"),
       onError: (err) => {
-        const message = err instanceof Error ? err.message : "Не вдалося надіслати запит";
+        const message =
+          err instanceof Error ? err.message : "Не вдалося надіслати запит";
         setErrorMessage(message);
         setStatus("error");
       },
@@ -69,21 +46,52 @@ export function FriendInviteModal({ open, userId, onClose }: Props) {
   useEffect(() => {
     if (!open) return;
 
+    let cancelled = false;
+    setStatus("idle");
+    setErrorMessage("");
+
     if (!userId) {
       setStatus("missing");
       return;
     }
 
-    if (!selfId || status === "unauth" || hasTriggered.current) return;
+    supabaseBrowser.auth
+      .getUser()
+      .then(({ data }) => {
+        if (cancelled) return;
+        const id = data.user?.id ?? "";
+        selfIdRef.current = id;
 
-    if (userId === selfId) {
-      setStatus("self");
-      hasTriggered.current = true;
-      return;
-    }
+        if (!id) {
+          setStatus("unauth");
+        } else if (userId === id) {
+          setStatus("self");
+        } else {
+          sendRequest.mutate(userId, {
+            onSuccess: () => {
+              if (!cancelled) setStatus("sent");
+            },
+            onError: (err) => {
+              if (cancelled) return;
+              const message =
+                err instanceof Error
+                  ? err.message
+                  : "Не вдалося надіслати запит";
+              setErrorMessage(message);
+              setStatus("error");
+            },
+          });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setStatus("unauth");
+      });
 
-    sendInvite();
-  }, [open, userId, selfId, status]);
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const statusInfo: Record<Status, StatusInfo> = {
     idle: {
