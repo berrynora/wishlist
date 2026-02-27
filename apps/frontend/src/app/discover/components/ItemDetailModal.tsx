@@ -5,16 +5,26 @@ import { Button } from "@/components/ui/Button/Button";
 import { DiscoverItem } from "@/api/types/wishilst";
 import { Heart, ExternalLink } from "lucide-react";
 import styles from "./ItemDetailModal.module.scss";
+import { useCurrentUserId } from "@/hooks/use-user";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   item: DiscoverItem;
-  onReserve?: (id: string) => void;
+  onToggleReserve?: (id: string) => void;
 };
 
-export function ItemDetailModal({ open, onClose, item, onReserve }: Props) {
-  const isReserved = item.status === 1 || !!item.reserved_by;
+export function ItemDetailModal({
+  open,
+  onClose,
+  item,
+  onToggleReserve,
+}: Props) {
+  const { data: currentUserId = "" } = useCurrentUserId();
+  const isReserved = item.isReserved;
+  // reserved_by may be null or string, currentUserId always string
+  const reservedByMe = !!item.reserved_by && item.reserved_by.toString() === currentUserId;
+  const canToggleReservation = !isReserved || reservedByMe;
   const imgSrc = item.image_url || item.image;
 
   return (
@@ -63,16 +73,21 @@ export function ItemDetailModal({ open, onClose, item, onReserve }: Props) {
             <Button
               variant={isReserved ? "secondary" : "primary"}
               onClick={() => {
-                if (!isReserved && onReserve) onReserve(item.id);
+                if (canToggleReservation && onToggleReserve)
+                  onToggleReserve(item.id);
               }}
-              disabled={isReserved}
+              disabled={!canToggleReservation}
             >
               <Heart
                 size={16}
                 fill={isReserved ? "currentColor" : "none"}
                 style={{ marginRight: 6 }}
               />
-              {isReserved ? "Reserved" : "Reserve this gift"}
+              {isReserved
+                ? reservedByMe
+                  ? "Release reservation"
+                  : "Reserved"
+                : "Reserve this gift"}
             </Button>
           </div>
         </div>

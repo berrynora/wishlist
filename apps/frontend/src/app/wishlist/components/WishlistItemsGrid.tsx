@@ -5,7 +5,7 @@ import { Item } from "@/types/item";
 type Props = {
   items: Item[];
   isOwner?: boolean;
-  onReserve?: (id: string) => void;
+  onToggleReserve?: (id: string) => void;
   onDelete?: (id: string) => void;
   onEdit?: (item: Item) => void;
 };
@@ -13,7 +13,7 @@ type Props = {
 export function WishlistItemsGrid({
   items,
   isOwner = false,
-  onReserve,
+  onToggleReserve,
   onDelete,
   onEdit,
 }: Props) {
@@ -25,7 +25,7 @@ export function WishlistItemsGrid({
             key={item.id}
             item={item}
             isOwner={isOwner}
-            onReserve={onReserve}
+            onToggleReserve={onToggleReserve}
             onDelete={onDelete}
             onEdit={onEdit}
           />

@@ -6,7 +6,7 @@ import { DiscoverItemCard } from "./DiscoverItemCard";
 import { DiscoverSection as Section } from "@/api/types/wishilst";
 
 type Props = Section & {
-  onReserve?: (itemId: string) => void;
+  onToggleReserve?: (itemId: string) => void;
 };
 
 export function DiscoverSection({
@@ -16,7 +16,7 @@ export function DiscoverSection({
   date,
   friend_id,
   items,
-  onReserve,
+  onToggleReserve,
 }: Props) {
   return (
     <section className={styles.section}>
@@ -40,7 +40,11 @@ export function DiscoverSection({
 
       <div className={styles.grid}>
         {items.map((item) => (
-          <DiscoverItemCard key={item.id} {...item} onReserve={onReserve} />
+          <DiscoverItemCard
+            key={item.id}
+            {...item}
+            onToggleReserve={onToggleReserve}
+          />
         ))}
       </div>
     </section>

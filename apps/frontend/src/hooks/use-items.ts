@@ -4,8 +4,7 @@ import {
   createItem,
   updateItem,
   deleteItem,
-  reserveItem,
-  unreserveItem,
+  toggleItemReservation,
 } from "@/api/items";
 import type { CreateItemParams, UpdateItemParams } from "@/api/types/item";
 import { wishlistKeys } from "./use-wishlists";
@@ -37,10 +36,17 @@ export function useCreateItem() {
     mutationFn: (params: CreateItemParams) => createItem(params),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: itemKeys.wishlist(data.wishlist_id),
+        predicate: ({ queryKey }) =>
+          Array.isArray(queryKey) &&
+          queryKey[0] === itemKeys.all[0] &&
+          queryKey[1] === "wishlist" &&
+          queryKey[2] === data.wishlist_id,
       });
       queryClient.invalidateQueries({
         queryKey: wishlistKeys.my(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: wishlistKeys.detail(data.wishlist_id),
       });
     },
   });
@@ -70,24 +76,24 @@ export function useDeleteItem() {
   });
 }
 
-export function useReserveItem() {
+export function useToggleItemReservation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => reserveItem(id),
+    mutationFn: (id: string) => toggleItemReservation(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: itemKeys.all });
+      queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
+      // Refresh friend/discover wishlists so reservation owner info updates
+      queryClient.invalidateQueries({
+        predicate: ({ queryKey }) =>
+          Array.isArray(queryKey) && queryKey[0] === wishlistKeys.all[0] &&
+          (queryKey[1] === "friends" || queryKey[1] === "friend"),
+      });
     },
   });
 }
 
-export function useUnreserveItem() {
-  const queryClient = useQueryClient();
+// Alias for legacy call sites still using the old name
+export const useReserveItem = useToggleItemReservation;
 
-  return useMutation({
-    mutationFn: (id: string) => unreserveItem(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: itemKeys.all });
-    },
-  });
-}

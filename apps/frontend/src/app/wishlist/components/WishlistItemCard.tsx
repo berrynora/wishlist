@@ -5,11 +5,12 @@ import { useState } from "react";
 import { Item } from "@/types/item";
 import { Heart, ExternalLink, Trash2, Pencil } from "lucide-react";
 import { WishlistItemDetailModal } from "./WishlistItemDetailModal";
+import { useCurrentUserId } from "@/hooks/use-user";
 
 type Props = {
   item: Item;
   isOwner?: boolean;
-  onReserve?: (id: string) => void;
+  onToggleReserve?: (id: string) => void;
   onDelete?: (id: string) => void;
   onEdit?: (item: Item) => void;
 };
@@ -17,13 +18,18 @@ type Props = {
 export function WishlistItemCard({
   item,
   isOwner = false,
-  onReserve,
+  onToggleReserve,
   onDelete,
   onEdit,
 }: Props) {
   const [detailOpen, setDetailOpen] = useState(false);
+  const { data: currentUserId = "" } = useCurrentUserId();
 
   const isReserved = item.status === 1 || !!item.reserved_by;
+  const reservedByMe = currentUserId
+    ? item.reserved_by === currentUserId
+    : false;
+  const canToggleReservation = !isOwner && (!isReserved || reservedByMe);
   const hasImage = Boolean(item.image_url);
   const price = item.price || "";
   const title = item.name;
@@ -52,9 +58,17 @@ export function WishlistItemCard({
                 className={`${styles.reserveBtn} ${isReserved ? styles.reserved : ""}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (!isReserved && onReserve) onReserve(item.id);
+                  if (canToggleReservation && onToggleReserve)
+                    onToggleReserve(item.id);
                 }}
-                disabled={isReserved}
+                disabled={!canToggleReservation}
+                aria-label={
+                  isReserved
+                    ? reservedByMe
+                      ? "Release reservation"
+                      : "Already reserved"
+                    : "Reserve item"
+                }
               >
                 <Heart size={16} fill={isReserved ? "currentColor" : "none"} />
               </button>
@@ -103,7 +117,7 @@ export function WishlistItemCard({
         onClose={() => setDetailOpen(false)}
         item={item}
         isOwner={isOwner}
-        onReserve={onReserve}
+        onToggleReserve={onToggleReserve}
         onDelete={onDelete}
         onEdit={onEdit}
       />

@@ -129,21 +129,16 @@ export async function deleteWishlist(wishlistId: string): Promise<void> {
 }
 
 export async function getWishlistById(wishlistId: string): Promise<Wishlist> {
-  const {
-    data: { session },
-  } = await supabaseBrowser.auth.getSession();
+  const { data, error } = await supabaseBrowser.rpc('get_wishlist_by_id', {
+    p_wishlist_id: wishlistId,
+  });
 
-  if (!session?.user) throw new Error("Not authenticated");
+  if (error) {
+    console.error('Error fetching wishlist:', error);
+    throw new Error(error.message || 'Failed to fetch wishlist');
+  }
 
-  const { data, error } = await supabaseBrowser
-    .from("wishlist")
-    .select("*")
-    .eq("id", wishlistId)
-    .single();
-
-  if (error) throw error;
-
-  return data;
+  return data as Wishlist;
 }
 
 export async function getFriendWishlists(

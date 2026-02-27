@@ -72,34 +72,15 @@ export async function deleteItem(itemId: string): Promise<void> {
   if (error) throw error;
 }
 
-export async function reserveItem(itemId: string): Promise<Item> {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabaseBrowser.auth.getSession();
+export async function toggleItemReservation(itemId: string): Promise<Item> {
+  const { data, error } = await supabaseBrowser.rpc('toggle_item_reservation', {
+    p_item_id: itemId,
+  });
 
-  if (sessionError) throw sessionError;
-  if (!session?.user) throw new Error("Not authenticated");
+  if (error) {
+    console.error('Error toggling item reservation:', error);
+    throw new Error(error.message || 'Failed to toggle reservation');
+  }
 
-  const { data, error } = await supabaseBrowser
-    .from("item")
-    .update({ status: 1, reserved_by: session.user.id })
-    .eq("id", itemId)
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
-export async function unreserveItem(itemId: string): Promise<Item> {
-  const { data, error } = await supabaseBrowser
-    .from("item")
-    .update({ status: 0, reserved_by: null })
-    .eq("id", itemId)
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
+  return data as Item;
 }

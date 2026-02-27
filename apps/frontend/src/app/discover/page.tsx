@@ -6,7 +6,7 @@ import { UpcomingEvents } from "./components/UpcomingEvents";
 import { DiscoverFilters } from "./components/DiscoverFilters";
 import { DiscoverSection } from "./components/DiscoverSection";
 import { useFriendsWishlistsDiscover } from "@/hooks/use-wishlists";
-import { useReserveItem } from "@/hooks/use-items";
+import { useToggleItemReservation } from "@/hooks/use-items";
 
 export default function DiscoverPage() {
   const [filter, setFilter] = useState<"wishlists" | "reserved">("wishlists");
@@ -17,7 +17,7 @@ export default function DiscoverPage() {
     isError,
   } = useFriendsWishlistsDiscover();
 
-  const reserveItem = useReserveItem();
+  const toggleReservation = useToggleItemReservation();
 
   const filteredSections = useMemo(() => {
     if (filter === "wishlists") return sections;
@@ -26,7 +26,7 @@ export default function DiscoverPage() {
       .map((section) => ({
         ...section,
         items: section.items.filter(
-          (item) => item.status === 1 || !!item.reserved_by,
+          (item) => item.isReserved,
         ),
       }))
       .filter((section) => section.items.length > 0);
@@ -55,7 +55,7 @@ export default function DiscoverPage() {
           <DiscoverSection
             key={section.id}
             {...section}
-            onReserve={(itemId) => reserveItem.mutate(itemId)}
+            onToggleReserve={(itemId) => toggleReservation.mutate(itemId)}
           />
         ))}
     </main>

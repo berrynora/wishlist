@@ -39,8 +39,8 @@ export type DiscoverItem = {
   url?: string | null;
   description?: string | null;
   priority?: "Low" | "Medium" | "High";
-  status?: number;
-  reserved_by?: string | null;
+  isReserved: boolean;
+  reservedBy?: string | null;
 };
 
 export type DiscoverSection = {
@@ -60,4 +60,5 @@ export interface FriendUpcomingWishlist {
   event_date: string;
   wishlist_id: string;
   friend_id: string;
+ 
 }

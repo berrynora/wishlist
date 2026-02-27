@@ -6,16 +6,16 @@ import { WishlistHeader } from "../components/WishlistHeader";
 import { WishlistItemsGrid } from "../components/WishlistItemsGrid";
 import {
   useWishlistItems,
-  useReserveItem,
+  useToggleItemReservation,
   useDeleteItem,
 } from "@/hooks/use-items";
 import { useWishlistById, useDeleteWishlist } from "@/hooks/use-wishlists";
+import { useCurrentUserId } from "@/hooks/use-user";
 import { CreateItemModal } from "../components/CreateItemModal";
 import { EditItemModal } from "../components/EditItemModal";
 import { EditWishlistModal } from "../components/EditWishlistModal";
 import { DeleteConfirmModal } from "@/components/ui/DeleteConfirmModal/DeleteConfirmModal";
 import { Pagination } from "@/components/ui/Pagination/Pagination";
-import { supabaseBrowser } from "@/lib/supabase-browser";
 import { Item } from "@/types/item";
 import styles from "./WishlistPage.module.scss";
 
@@ -25,9 +25,8 @@ export default function WishlistItemsPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
-
-  const [currentUserId, setCurrentUserId] = useState<string>("");
   const [page, setPage] = useState(1);
+  const { data: currentUserId = "" } = useCurrentUserId();
 
   // Modal states
   const [createOpen, setCreateOpen] = useState(false);
@@ -35,12 +34,6 @@ export default function WishlistItemsPage() {
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
   const [editWishlistOpen, setEditWishlistOpen] = useState(false);
   const [deleteWishlistOpen, setDeleteWishlistOpen] = useState(false);
-
-  useEffect(() => {
-    supabaseBrowser.auth.getUser().then(({ data }) => {
-      setCurrentUserId(data.user?.id ?? "");
-    });
-  }, []);
 
   const {
     data: wishlist,
@@ -54,7 +47,7 @@ export default function WishlistItemsPage() {
     isError: itemsError,
   } = useWishlistItems(id, { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE });
 
-  const reserveItem = useReserveItem();
+  const toggleReservation = useToggleItemReservation();
   const deleteItemMutation = useDeleteItem();
   const deleteWishlistMutation = useDeleteWishlist();
 
@@ -87,7 +80,7 @@ export default function WishlistItemsPage() {
           <WishlistItemsGrid
             items={items}
             isOwner={isOwner}
-            onReserve={(itemId) => reserveItem.mutate(itemId)}
+            onToggleReserve={(itemId) => toggleReservation.mutate(itemId)}
             onDelete={(itemId) => setDeleteItemId(itemId)}
             onEdit={(item) => setEditItem(item)}
           />

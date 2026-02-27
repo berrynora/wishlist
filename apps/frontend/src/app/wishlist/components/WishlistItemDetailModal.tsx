@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/Button/Button";
 import { Item } from "@/types/item";
 import { Heart, ExternalLink, Trash2, Pencil } from "lucide-react";
 import styles from "./WishlistItemDetailModal.module.scss";
+import { useCurrentUserId } from "@/hooks/use-user";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   item: Item;
   isOwner?: boolean;
-  onReserve?: (id: string) => void;
+  onToggleReserve?: (id: string) => void;
   onDelete?: (id: string) => void;
   onEdit?: (item: Item) => void;
 };
@@ -27,11 +28,16 @@ export function WishlistItemDetailModal({
   onClose,
   item,
   isOwner = false,
-  onReserve,
+  onToggleReserve,
   onDelete,
   onEdit,
 }: Props) {
+  const { data: currentUserId = "" } = useCurrentUserId();
   const isReserved = item.status === 1 || !!item.reserved_by;
+  const reservedByMe = currentUserId
+    ? item.reserved_by === currentUserId
+    : false;
+  const canToggleReservation = !isOwner && (!isReserved || reservedByMe);
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -108,16 +114,21 @@ export function WishlistItemDetailModal({
                 <Button
                   variant={isReserved ? "secondary" : "primary"}
                   onClick={() => {
-                    if (!isReserved && onReserve) onReserve(item.id);
+                    if (canToggleReservation && onToggleReserve)
+                      onToggleReserve(item.id);
                   }}
-                  disabled={isReserved}
+                  disabled={!canToggleReservation}
                 >
                   <Heart
                     size={16}
                     fill={isReserved ? "currentColor" : "none"}
                     style={{ marginRight: 6 }}
                   />
-                  {isReserved ? "Reserved" : "Reserve this gift"}
+                  {isReserved
+                    ? reservedByMe
+                      ? "Release reservation"
+                      : "Reserved"
+                    : "Reserve this gift"}
                 </Button>
               )}
             </div>
