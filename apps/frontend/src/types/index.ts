@@ -1,7 +1,8 @@
-interface PaginationParams {
+export type PaginationParams = {
   skip?: number;
   take?: number;
-}
+  search?: string; 
+};
 
 export interface Notification {
   id: string;

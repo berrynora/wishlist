@@ -1,0 +1,86 @@
+"use client";
+
+import styles from "./WishlistInfo.module.scss";
+import { Button } from "@/components/ui/Button/Button";
+import { Calendar, Pencil, Plus, Trash2 } from "lucide-react";
+import { Wishlist } from "@/types/wishlist";
+import {
+  visibilityLabel,
+  visibilityIcon,
+} from "@/lib/helpers/wishlist-helper";
+
+type Props = {
+  wishlist: Wishlist;
+  onAddItem?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  isOwner?: boolean;
+};
+
+export function WishlistInfo({
+  wishlist,
+  onAddItem,
+  onEdit,
+  onDelete,
+  isOwner = false,
+}: Props) {
+  const visibility = visibilityLabel[wishlist.visibility_type] ?? "Private";
+  const VisibilityIcon = visibilityIcon[wishlist.visibility_type];
+  const itemsCount = wishlist.itemsCount ?? 0;
+  const description = wishlist.description ?? "";
+  const eventDate = (wishlist as Wishlist & { event_date?: string }).event_date;
+
+  return (
+    <div className={styles.info}>
+      <div className={styles.titleRow}>
+        <div className={styles.titleGroup}>
+          <h1>{wishlist.title}</h1>
+          {description && <p className={styles.description}>{description}</p>}
+        </div>
+
+        {isOwner && (
+          <div className={styles.ownerActions}>
+            <Button size="sm" onClick={onAddItem}>
+              <Plus size={14} />
+              <span>Add Item</span>
+            </Button>
+            <button
+              className={styles.iconBtn}
+              onClick={onEdit}
+              title="Edit wishlist"
+            >
+              <Pencil size={15} />
+            </button>
+            <button
+              className={`${styles.iconBtn} ${styles.dangerBtn}`}
+              onClick={onDelete}
+              title="Delete wishlist"
+            >
+              <Trash2 size={15} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className={styles.badges}>
+        <span className={styles.visibilityBadge}>
+          {VisibilityIcon && <VisibilityIcon size={13} />}
+          {visibility}
+        </span>
+        <span className={styles.countBadge}>
+          {itemsCount} {itemsCount === 1 ? "item" : "items"}
+        </span>
+        {eventDate && (
+          <span className={styles.dateBadge}>
+            <Calendar size={13} />
+            {new Date(eventDate).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}

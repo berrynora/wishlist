@@ -13,6 +13,7 @@ export function DiscoverSection({
   owner,
   username,
   wishlist,
+  wishlist_id,
   date,
   friend_id,
   items,
@@ -29,7 +30,11 @@ export function DiscoverSection({
           </span>
         </div>
 
-        {friend_id ? (
+        {wishlist_id ? (
+          <Link href={`/wishlist/${wishlist_id}`} className={styles.viewAll}>
+            View all
+          </Link>
+        ) : friend_id ? (
           <Link href={`/friends/${friend_id}`} className={styles.viewAll}>
             View all
           </Link>

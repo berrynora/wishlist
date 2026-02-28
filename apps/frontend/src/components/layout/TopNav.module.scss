@@ -191,12 +191,11 @@
     transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
-    color: #c0267e;
-    transform: scale(1.1);
+    /* No color change on hover */
   }
 
   &:active {
-    transform: scale(0.92);
+    /* No transform or scale on active */
   }
 }
 
