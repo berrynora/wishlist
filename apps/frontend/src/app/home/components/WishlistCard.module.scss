@@ -1,24 +1,24 @@
 @use "@/styles/variables" as *;
 
 .card {
-  background: #ffffff;
-  border: 1px solid #f1f1f1;
-  border-radius: 18px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: $radius-xl;
   overflow: hidden;
   transition:
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transform 0.35s $ease-out,
+    box-shadow 0.35s $ease-out,
+    border-color 0.35s $ease-out;
   cursor: pointer;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
-    border-color: #e8dce2;
+    transform: translateY(-8px);
+    box-shadow: var(--card-hover-shadow-xl);
+    border-color: transparent;
   }
 
   &:active {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
   }
 }
 
@@ -28,45 +28,63 @@
   height: 120px;
   display: grid;
   place-items: center;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, var(--brand-alpha-06));
+    pointer-events: none;
+  }
 }
 
 .icon {
-  color: #b8b8b8;
+  color: rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
+  transition: transform 0.35s $ease-spring;
+
+  .card:hover & {
+    transform: scale(1.15) rotate(-5deg);
+  }
 }
 
-/* Accent backgrounds */
+/* Accent backgrounds — richer gradients */
 .pink {
-  background: #f6dce8;
+  background: var(--accent-pink);
 }
 
 .blue {
-  background: #e4f2fb;
+  background: var(--accent-blue);
 }
 
 .peach {
-  background: #fdeee5;
+  background: var(--accent-peach);
 }
 
 .mint {
-  background: #ddf7ec;
+  background: var(--accent-mint);
 }
 
 .lavender {
-  background: #eeebff;
+  background: var(--accent-lavender);
 }
 
 /* ===== CONTENT ===== */
 
 .content {
-  padding: 16px 18px;
+  padding: 18px 20px;
 }
 
 .title {
   font-family: var(--font-sans);
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   font-size: 15px;
-  font-weight: 500;
-  color: #111827;
+  font-weight: 600;
+  color: $text;
+  letter-spacing: -0.01em;
 }
 
 /* Row under title */
@@ -76,15 +94,17 @@
   justify-content: space-between;
   align-items: center;
   font-size: 13px;
-  color: #6b7280;
+  color: $text-muted;
 }
 
 .items {
   white-space: nowrap;
+  font-weight: 500;
 }
 
 .visibility {
   display: flex;
   align-items: center;
   gap: 6px;
+  font-weight: 500;
 }

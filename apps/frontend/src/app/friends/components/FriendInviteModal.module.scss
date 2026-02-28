@@ -1,36 +1,42 @@
+@use "@/styles/variables" as *;
+
 .card {
-	border: 1px solid #e5e7eb;
-	border-radius: 14px;
-	padding: 20px;
-	background: #ffffff;
-	box-shadow: 0 10px 30px rgba(17, 24, 39, 0.06);
-	display: grid;
-	gap: 10px;
+  border: 1px solid var(--card-border);
+  border-radius: $radius-xl;
+  padding: 24px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  gap: 12px;
 }
 
 .eyebrow {
-	font-size: 12px;
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
-	color: #6b7280;
-	margin: 0;
-	font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0;
+  font-weight: 600;
 }
 
 .cardTitle {
-	margin: 0;
-	font-size: 22px;
-	font-family: var(--font-serif);
+  margin: 0;
+  font-size: 22px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
 }
 
 .cardText {
-	margin: 0 0 8px;
-	color: #4b5563;
-	font-size: 14px;
+  margin: 0 0 8px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .loading {
-	margin: 4px 0 0;
-	color: #6b7280;
-	font-size: 13px;
+  margin: 4px 0 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
 }

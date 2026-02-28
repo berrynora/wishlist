@@ -1,23 +1,24 @@
+@use "@/styles/variables" as *;
+
 .card {
-  background: white;
-  border: 1px solid #f1f1f1;
-  border-radius: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: $radius-lg;
   padding: 16px;
-  transition:
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s $ease-out;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+    transform: translateY(-4px);
+    box-shadow: var(--card-hover-shadow);
+    border-color: transparent;
   }
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: #fde7f3;
+  background: var(--gradient-brand-subtle);
   display: grid;
   place-items: center;
   margin-bottom: 12px;
@@ -27,17 +28,20 @@
   strong {
     display: block;
     font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--color-text);
   }
 
   span {
     font-size: 12px;
-    color: #6b7280;
+    color: var(--color-text-muted);
   }
 }
 
 .meta {
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--color-text-light);
   margin-top: 4px;
 }
 
@@ -49,49 +53,57 @@
 
 .accept {
   flex: 1;
-  background: #c0267e;
+  background: $brand;
   color: white;
   border: none;
-  border-radius: 999px;
-  padding: 6px;
+  border-radius: $radius-pill;
+  padding: 7px;
+  font-weight: 600;
+  font-size: 13px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: $shadow-brand;
+  transition: all 0.3s $ease-out;
 
   &:hover:not(:disabled) {
-    background: darken(#c0267e, 6%);
-    box-shadow: 0 2px 8px rgba(192, 38, 126, 0.3);
+    background: $brand-dark;
+    box-shadow: $shadow-brand-lg;
+    transform: translateY(-1px);
   }
 
   &:active:not(:disabled) {
-    transform: scale(0.96);
+    transform: translateY(0) scale(0.97);
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.55;
     cursor: not-allowed;
+    box-shadow: none;
   }
 }
 
 .decline {
   flex: 1;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 999px;
-  padding: 6px;
+  background: var(--card-bg);
+  border: 1.5px solid var(--color-border-light);
+  border-radius: $radius-pill;
+  padding: 7px;
+  font-size: 13px;
+  color: var(--color-text);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s $ease-out;
 
   &:hover:not(:disabled) {
-    border-color: #d1d5db;
-    background: #f9fafb;
+    border-color: var(--color-border);
+    background: var(--color-bg-subtle);
+    transform: translateY(-1px);
   }
 
   &:active:not(:disabled) {
-    transform: scale(0.96);
+    transform: translateY(0) scale(0.97);
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.55;
     cursor: not-allowed;
   }
 }

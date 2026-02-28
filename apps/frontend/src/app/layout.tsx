@@ -20,7 +20,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${playfair.variable}`}>
+    <html
+      lang="en"
+      className={`${dmSans.variable} ${playfair.variable}`}
+      suppressHydrationWarning
+    >
       <body suppressHydrationWarning>
         <AppShell>{children}</AppShell>
       </body>

@@ -1,17 +1,31 @@
-$radius-lg: 16px;
+// Radii
+$radius-sm: 8px;
 $radius-md: 12px;
-$radius-pill: 12px;
+$radius-lg: 16px;
+$radius-xl: 20px;
+$radius-pill: 999px;
 
-$border: #f3e8ee;
-$border-light: #e5e7eb;
+// Borders (now theme-aware via CSS custom properties)
+$border: var(--color-border);
+$border-light: var(--color-border-light);
 
-$text: #111827;
-$text-muted: #6b7280;
+// Text
+$text: var(--color-text);
+$text-muted: var(--color-text-muted);
+$text-light: var(--color-text-light);
 
-$card: #ffffff;
+// Surfaces
+$card: var(--card-bg);
+$bg: var(--color-bg);
+$bg-white: var(--color-bg-elevated);
+$bg-warm: var(--color-bg-warm);
 
-$brand: #c0267e;
+// Brand
+$brand: var(--color-brand);
+$brand-light: var(--color-brand-light);
+$brand-dark: var(--color-brand-dark);
 
+// Palette
 $pink: #f472b6;
 $blue: #60a5fa;
 $mint: #6ee7b7;
@@ -25,7 +39,10 @@ $duration-fast: 0.15s;
 $duration-normal: 0.25s;
 $duration-slow: 0.35s;
 
-// Shadows
-$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-$shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
-$shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1);
+// Shadows (theme-aware)
+$shadow-sm: var(--shadow-sm);
+$shadow-md: var(--shadow-md);
+$shadow-lg: var(--shadow-lg);
+$shadow-xl: var(--shadow-xl);
+$shadow-brand: var(--shadow-brand);
+$shadow-brand-lg: var(--shadow-brand-lg);

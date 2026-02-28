@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { Gift, Users, Heart, Search } from "lucide-react";
 import { ProfileMenu } from "../profile/ProfileMenu";
 import { NotificationsMenu } from "../notifications/NotificationsMenu";
+import { ThemeToggle } from "./ThemeToggle";
 import { useSearchWishlists } from "@/hooks/use-wishlists";
 
 const navItems = [
@@ -141,6 +142,7 @@ export function TopNav() {
             </div>
           )}
 
+          <ThemeToggle />
           <NotificationsMenu />
           <ProfileMenu />
         </div>

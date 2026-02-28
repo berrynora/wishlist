@@ -2,15 +2,24 @@
 
 .input {
   width: 100%;
-  border: 1px solid $border;
-  background: white;
-  border-radius: $radius-pill;
+  border: 1.5px solid var(--input-border);
+  background: var(--input-bg);
+  border-radius: $radius-md;
   padding: 10px 14px;
   font-family: var(--font-sans);
+  font-size: 14px;
+  color: $text;
+  transition:
+    border-color 0.3s $ease-out,
+    box-shadow 0.3s $ease-out;
+
+  &::placeholder {
+    color: $text-light;
+  }
 
   &:focus {
-    border-color: rgba(192, 38, 126, 0.4);
-    box-shadow: 0 0 0 3px rgba(192, 38, 126, 0.12);
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 0 4px var(--input-focus-ring);
     outline: none;
   }
 }

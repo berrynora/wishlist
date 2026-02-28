@@ -2,25 +2,28 @@
 
 .container {
   display: grid;
-  gap: 12px;
+  gap: 14px;
   text-align: center;
-  padding: 8px 4px;
+  padding: 12px 8px;
 }
 
 .iconWrapper {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  background: #fef2f2;
-  color: #b91c1c;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
   display: grid;
   place-items: center;
   margin: 0 auto;
+  box-shadow: 0 4px 14px rgba(185, 28, 28, 0.1);
 }
 
 .title {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   margin: 0;
 }
 
@@ -28,7 +31,7 @@
   font-size: 14px;
   color: $text-muted;
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .footer {

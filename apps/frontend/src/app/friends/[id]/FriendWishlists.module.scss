@@ -19,8 +19,10 @@
   gap: 14px;
 
   h1 {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
     margin: 0;
   }
 
@@ -32,21 +34,22 @@
 }
 
 .back {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  border: 1px solid $border;
-  background: white;
+  border: 1.5px solid var(--color-border-light);
+  background: var(--card-bg);
   display: grid;
   place-items: center;
   color: $text;
   text-decoration: none;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s $ease-out;
 
   &:hover {
     border-color: $brand;
     color: $brand;
     transform: scale(1.08);
+    box-shadow: 0 4px 12px var(--brand-alpha-12);
   }
 
   &:active {

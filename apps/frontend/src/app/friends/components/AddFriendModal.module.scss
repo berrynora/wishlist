@@ -10,16 +10,18 @@
 
 .eyebrow {
   font-size: 12px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #6b7280;
+  color: var(--color-text-muted);
   margin: 0 0 6px;
   font-weight: 600;
 }
 
 .header h2 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   margin: 0 0 6px;
 }
 
@@ -27,6 +29,7 @@
   font-size: 14px;
   color: $text-muted;
   margin: 0;
+  line-height: 1.6;
 }
 
 /* Field */
@@ -46,10 +49,15 @@
 .linkWrapper {
   display: flex;
   align-items: center;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  border: 1.5px solid var(--input-border);
+  border-radius: $radius-md;
   padding: 8px 10px;
-  background: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
+  background: var(--input-bg);
+  transition: border-color 0.3s $ease-out;
+
+  &:focus-within {
+    border-color: var(--input-focus-border);
+  }
 
   input {
     border: none;
@@ -58,7 +66,7 @@
     flex: 1;
     font-size: 15px;
     font-family: var(--font-sans);
-    color: #111827;
+    color: var(--color-text);
   }
 }
 
@@ -66,16 +74,17 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  background: #f8fafc;
+  border: 1.5px solid var(--color-border-light);
+  background: var(--color-bg-subtle);
   cursor: pointer;
 
   display: grid;
   place-items: center;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s $ease-out;
 
   &:hover:not(:disabled) {
-    background: #eef2ff;
+    background: var(--brand-alpha-06);
+    border-color: var(--brand-alpha-20);
     transform: scale(1.05);
   }
 
@@ -91,7 +100,8 @@
 
 .copied {
   font-size: 12px;
-  color: #047857;
+  color: var(--color-success);
+  font-weight: 500;
 }
 
 /* Divider */
@@ -100,10 +110,12 @@
   position: relative;
   text-align: center;
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--color-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 
   span {
-    background: white;
+    background: var(--modal-bg);
     padding: 0 10px;
     position: relative;
     z-index: 1;
@@ -116,7 +128,12 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: #f3e8ee;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--divider-color),
+      transparent
+    );
     z-index: 0;
   }
 }
@@ -134,18 +151,20 @@
 
   input {
     width: 100%;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
+    border: 1.5px solid var(--input-border);
+    border-radius: $radius-md;
     padding: 10px 14px;
     font-size: 15px;
+    color: $text;
+    background: var(--input-bg);
     outline: none;
     transition:
-      border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      border-color 0.3s $ease-out,
+      box-shadow 0.3s $ease-out;
 
     &:focus {
-      border-color: #6366f1;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+      border-color: var(--input-focus-border);
+      box-shadow: 0 0 0 4px var(--input-focus-ring);
     }
   }
 }

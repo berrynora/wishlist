@@ -1,3 +1,5 @@
+@use "@/styles/variables" as *;
+
 .container {
   display: grid;
   gap: 20px;
@@ -5,15 +7,18 @@
 }
 
 .header h2 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   margin: 0 0 6px;
 }
 
 .header p {
   margin: 0;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--color-text-muted);
+  line-height: 1.6;
 }
 
 .field {
@@ -29,18 +34,24 @@
   textarea,
   select {
     width: 100%;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
+    border: 1.5px solid var(--input-border);
+    border-radius: $radius-md;
     padding: 12px 14px;
     font-size: 14px;
+    color: $text;
+    background: var(--input-bg);
     outline: none;
     transition:
-      border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      border-color 0.3s $ease-out,
+      box-shadow 0.3s $ease-out;
+
+    &::placeholder {
+      color: $text-light;
+    }
 
     &:focus {
-      border-color: #6366f1;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+      border-color: var(--input-focus-border);
+      box-shadow: 0 0 0 4px var(--input-focus-ring);
     }
   }
 
@@ -58,28 +69,33 @@
 
 .error {
   margin: 4px 0 0;
-  color: #b91c1c;
+  color: var(--color-danger);
   font-size: 13px;
 }
 
 .upload {
-  border: 1px dashed #d1d5db;
-  border-radius: 12px;
+  border: 1.5px dashed var(--color-border-light);
+  border-radius: $radius-md;
   padding: 12px;
   display: grid;
   gap: 8px;
-  background: #f9fafb;
+  background: var(--elevated-bg);
 }
 
 .dropArea {
-  border: 1px solid #e5e7eb;
+  border: 1.5px solid var(--color-border-subtle);
   border-radius: 10px;
   padding: 14px;
   display: grid;
   gap: 6px;
   justify-items: center;
-  color: #6b7280;
-  background: #ffffff;
+  color: var(--color-text-muted);
+  background: var(--card-bg);
+  transition: border-color 0.3s $ease-out;
+
+  &:hover {
+    border-color: var(--input-focus-border);
+  }
 }
 
 .preview {
