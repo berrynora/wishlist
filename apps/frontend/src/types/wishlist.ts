@@ -17,6 +17,7 @@ export interface Wishlist {
   user_id: string;
   title: string;
   description: string | null;
+  event_date?: string | null;
   visibility_type: WishlistVisibility;
   image_url: string | null;
   accent_type: WishlistAccent;

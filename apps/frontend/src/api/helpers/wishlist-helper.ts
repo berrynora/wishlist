@@ -3,7 +3,7 @@ import { Wishlist } from "@/types/wishlist";
 
 export async function getWishlists(
   filter: (query: any) => any,
-  { skip = 0, take = 10 }: PaginationParams = {}
+  { skip = 0, take = 10, search }: PaginationParams = {}
 ): Promise<Wishlist[]> {
   const {
     data: { session },
@@ -18,6 +18,11 @@ export async function getWishlists(
     .select("*, item(count)")
     .order("created_at", { ascending: false })
     .range(skip, skip + take - 1);
+
+  // Додаємо пошук за тайтлом
+  if (search && search.trim() !== "") {
+    query = query.ilike("title", `%${search}%`);
+  }
 
   query = filter(query);
 

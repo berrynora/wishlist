@@ -1,6 +1,7 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useMemo } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useFriendWishlists } from "@/hooks/use-wishlists";
 import { useRemoveFriend } from "@/hooks/use-friends";
@@ -13,12 +14,17 @@ export default function FriendWishlistsPage() {
   const params = useParams();
   const router = useRouter();
   const friendId = params.id as string;
+  const searchParams = useSearchParams();
+  const search = useMemo(
+    () => searchParams.get("search") ?? "",
+    [searchParams],
+  );
 
   const {
     data: wishlists = [],
     isLoading,
     isError,
-  } = useFriendWishlists(friendId);
+  } = useFriendWishlists(friendId, { search });
 
   const removeFriend = useRemoveFriend();
 

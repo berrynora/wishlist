@@ -54,6 +54,22 @@ export type DiscoverSection = {
   items: DiscoverItem[];
 };
 
+export type ReservedItem = {
+  item_id: string;
+  title: string;
+  price: number;
+  store: string;
+  image: string;
+  priority: "Low" | "Medium" | "High" | null;
+  status: number;
+  wishlist_id: string;
+  wishlist_title: string;
+  owner_id: string;
+  owner_name: string;
+  owner_username: string;
+  owner_avatar: string;
+};
+
 export interface FriendUpcomingWishlist {
   friend_name: string;
   wishlist_title: string;

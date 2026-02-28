@@ -6,6 +6,7 @@ import {
   UpdateWishlistParams,
   DiscoverSection,
   FriendUpcomingWishlist,
+  ReservedItem,
 } from "./types/wishilst";
 
 export async function getMyWishlists(
@@ -58,6 +59,26 @@ export async function getFriendsWishlistsDiscover(
   return data || [];
 }
 
+export async function getFriendsWishlistsReservedByMe(
+  params: PaginationParams = {},
+): Promise<ReservedItem[]> {
+  const { skip = 0, take = 10 } = params;
+
+  const { data, error } = await supabaseBrowser.rpc(
+    "get_reserved_items_by_me",
+    {
+      p_skip: skip,
+      p_take: take,
+    },
+  );
+
+  if (error) {
+    console.error("Error fetching reserved wishlists by me:", error);
+    throw error;
+  }
+
+  return data || [];
+}
 export async function createWishlist({
   title,
   description,
@@ -97,7 +118,7 @@ export async function updateWishlist(
   wishlistId: string,
   updates: UpdateWishlistParams,
 ): Promise<Wishlist> {
-  const dbUpdates: Record<string, any> = {};
+  const dbUpdates: Partial<Wishlist> = {};
 
   if (updates.title !== undefined) dbUpdates.title = updates.title;
   if (updates.description !== undefined)
@@ -106,6 +127,7 @@ export async function updateWishlist(
     dbUpdates.visibility_type = updates.visibility;
   if (updates.imageUrl !== undefined) dbUpdates.image_url = updates.imageUrl;
   if (updates.accent !== undefined) dbUpdates.accent_type = updates.accent;
+  if (updates.event_date !== undefined) dbUpdates.event_date = updates.event_date;
 
   const { data, error } = await supabaseBrowser
     .from("wishlist")
@@ -179,10 +201,16 @@ export async function searchWishlists(
 
   if (error) throw error;
 
-  return (data ?? []).map(({ item, ...wishlist }: any) => ({
-    ...wishlist,
-    itemsCount: item?.[0]?.count || 0,
-  }));
+  return (data ?? []).map((row) => {
+    const { item, ...wishlist } = row as {
+      item?: { count: number }[];
+    } & Wishlist;
+
+    return {
+      ...wishlist,
+      itemsCount: item?.[0]?.count || 0,
+    };
+  });
 }
 
 export async function getFriendsUpcomingWishlists(): Promise<

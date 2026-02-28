@@ -1,4 +1,6 @@
+import { Button } from "@/components/ui/Button/Button";
 import styles from "./DashboardHeader.module.scss";
+import { Plus } from "lucide-react";
 
 type Props = {
   onNewWishlist: () => void;
@@ -14,9 +16,10 @@ export function DashboardHeader({ onNewWishlist }: Props) {
         </p>
       </div>
 
-      <button className={styles.button} onClick={onNewWishlist}>
-        + New Wishlist
-      </button>
+           <Button size="sm" onClick={onNewWishlist}>
+                <Plus size={18} />
+                <span>Add Wishlist</span>
+              </Button>
     </div>
   );
 }

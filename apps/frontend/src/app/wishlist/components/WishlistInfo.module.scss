@@ -1,0 +1,106 @@
+@use "@/styles/variables" as *;
+
+.info {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 16px;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.titleGroup {
+  h1 {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+    color: $text;
+  }
+}
+
+.description {
+  font-size: 14px;
+  color: $text-muted;
+  margin: 8px 0 0;
+  line-height: 1.5;
+  max-width: 620px;
+}
+
+.ownerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.iconBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid $border-light;
+  background: white;
+  color: $text-muted;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.2s $ease-out;
+
+  &:hover {
+    border-color: $brand;
+    color: $brand;
+    transform: scale(1.06);
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+}
+
+.dangerBtn {
+  &:hover {
+    border-color: #b91c1c;
+    color: #b91c1c;
+    background: #fef2f2;
+  }
+}
+
+.badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.visibilityBadge,
+.countBadge,
+.dateBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: $radius-pill;
+  font-weight: 500;
+}
+
+.visibilityBadge {
+  background: #fdf2f8;
+  color: $brand;
+}
+
+.countBadge {
+  background: #f3f4f6;
+  color: $text-muted;
+}
+
+.dateBadge {
+  background: #eff6ff;
+  color: #2563eb;
+}

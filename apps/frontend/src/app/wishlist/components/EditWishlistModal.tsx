@@ -17,7 +17,13 @@ type Props = {
 export function EditWishlistModal({ open, onClose, wishlist }: Props) {
   if (!open) return null;
 
-  return <EditWishlistForm wishlist={wishlist} onClose={onClose} />;
+  return (
+    <EditWishlistForm
+      key={`${wishlist.id}-${wishlist.event_date ?? "no-date"}`}
+      wishlist={wishlist}
+      onClose={onClose}
+    />
+  );
 }
 
 type PrivacyOption = "Public" | "Friends" | "Private";
@@ -68,11 +74,11 @@ function EditWishlistForm({
   const [color, setColor] = useState<ColorOption>(
     accentToColor[wishlist.accent_type] ?? "pink",
   );
-  const eventDateRaw = (wishlist as Wishlist & { event_date?: string })
-    .event_date;
-  const [eventDate, setEventDate] = useState(
-    eventDateRaw ? eventDateRaw.split("T")[0] : "",
-  );
+  const [eventDate, setEventDate] = useState(() => {
+    const raw = wishlist.event_date ?? (wishlist as Wishlist & { event_date?: string }).event_date;
+    return raw ? String(raw).split("T")[0] : "";
+  });
+
 
   const { mutate, isPending } = useUpdateWishlist();
 
