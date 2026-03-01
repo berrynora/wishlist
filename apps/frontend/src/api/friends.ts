@@ -3,6 +3,7 @@ import type {
   FriendRequest,
   FriendWithDetails,
   FriendRequestWithDetails,
+  ProfileSearchResult,
 } from "./types/friends";
 
 export async function getIncomingFriendRequests({
@@ -129,6 +130,37 @@ export async function getFriends({
     p_skip: skip,
     p_take: take,
   });
+
+  if (error) throw error;
+
+  return data ?? [];
+}
+
+export async function searchProfilesByNickname({
+  query,
+  skip = 0,
+  take = 20,
+}: {
+  query: string;
+  skip?: number;
+  take?: number;
+}): Promise<ProfileSearchResult[]> {
+  const session = (await supabaseBrowser.auth.getSession()).data.session;
+  const myUserId = session?.user?.id;
+
+  if (!myUserId) throw new Error("Not authenticated");
+
+  const trimmed = query?.trim();
+  if (!trimmed) return [];
+
+  const { data, error } = await supabaseBrowser.rpc(
+    "search_profiles_by_nickname",
+    {
+      p_query: trimmed,
+      p_skip: skip,
+      p_take: take,
+    },
+  );
 
   if (error) throw error;
 

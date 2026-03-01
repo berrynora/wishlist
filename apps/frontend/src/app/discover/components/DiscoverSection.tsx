@@ -19,6 +19,8 @@ export function DiscoverSection({
   items,
   onToggleReserve,
 }: Props) {
+  const itemCount = items.length;
+
   return (
     <section className={styles.section}>
       <header>
@@ -32,14 +34,14 @@ export function DiscoverSection({
 
         {wishlist_id ? (
           <Link href={`/wishlist/${wishlist_id}`} className={styles.viewAll}>
-            View all
+            View all {itemCount}
           </Link>
         ) : friend_id ? (
           <Link href={`/friends/${friend_id}`} className={styles.viewAll}>
-            View all
+            View all {itemCount}
           </Link>
         ) : (
-          <span className={styles.viewAll}>View all</span>
+          <span className={styles.viewAll}>View all ({itemCount})</span>
         )}
       </header>
 

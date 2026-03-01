@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "./DiscoverFilters.module.scss";
+import { Sparkles, Heart } from "lucide-react";
 
 type Props = {
   active: "wishlists" | "reserved";
@@ -14,13 +15,15 @@ export function DiscoverFilters({ active, onChange }: Props) {
         className={active === "wishlists" ? styles.active : ""}
         onClick={() => onChange("wishlists")}
       >
-        All Wishlists
+        <Sparkles size={16} />
+        <span>All Wishlists</span>
       </button>
       <button
         className={active === "reserved" ? styles.active : ""}
         onClick={() => onChange("reserved")}
       >
-        Reserved
+        <Heart size={16} />
+        <span>Reserved</span>
       </button>
     </div>
   );

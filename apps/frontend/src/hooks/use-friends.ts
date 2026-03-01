@@ -8,7 +8,8 @@ import {
   cancelFriendRequest,
   getFriends,
   checkFriendship,
-  removeFriend
+  removeFriend,
+  searchProfilesByNickname,
 } from '@/api/friends';
 
 // Query Keys
@@ -20,6 +21,7 @@ export const friendKeys = {
   incoming: (params?: PaginationParams) => [...friendKeys.requests(), 'incoming', params] as const,
   outgoing: (params?: PaginationParams) => [...friendKeys.requests(), 'outgoing', params] as const,
   check: (userId: string) => [...friendKeys.all, 'check', userId] as const,
+  search: (query: string, params?: PaginationParams) => [...friendKeys.all, 'search', query, params] as const,
 };
 
 // ============= QUERIES =============
@@ -53,6 +55,21 @@ export function useCheckFriendship(userId: string) {
   });
 }
 
+export function useSearchProfilesByNickname(query: string, params?: PaginationParams) {
+  const trimmed = query?.trim() ?? '';
+
+  return useQuery({
+    queryKey: friendKeys.search(trimmed, params),
+    queryFn: () => searchProfilesByNickname({
+      query: trimmed,
+      skip: params?.skip,
+      take: params?.take,
+    }),
+    enabled: !!trimmed,
+    staleTime: 30_000,
+  });
+}
+
 // ============= MUTATIONS =============
 
 export function useSendFriendRequest() {
@@ -61,7 +78,9 @@ export function useSendFriendRequest() {
   return useMutation({
     mutationFn: (receiverId: string) => sendFriendRequest(receiverId),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: friendKeys.all });
       queryClient.invalidateQueries({ queryKey: friendKeys.outgoing() });
+      queryClient.invalidateQueries({ queryKey: friendKeys.lists() });
     },
   });
 }

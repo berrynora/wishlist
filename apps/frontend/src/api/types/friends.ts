@@ -42,3 +42,8 @@ export interface FriendWithDetails {
   wishlists_count: number;
   mutual_friends_count: number;
 }
+
+export interface ProfileSearchResult {
+  id: string;
+  nickname: string;
+}

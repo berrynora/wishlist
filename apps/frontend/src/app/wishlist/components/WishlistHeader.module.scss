@@ -7,19 +7,81 @@
 /* ===== BANNER ===== */
 
 .banner {
-  height: 140px;
+  height: 112px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .bannerInner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px 24px;
+  padding: 14px 18px;
   height: 100%;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+}
+
+.menuWrapper {
+  position: relative;
+}
+
+.menuButton {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: $text;
+  transition: all 0.3s $ease-out;
+
+  &:hover {
+    background: var(--card-bg);
+    transform: scale(1.08);
+    box-shadow: $shadow-md;
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.menuDropdown {
+  position: absolute;
+  right: 0;
+  top: 46px;
+  min-width: 180px;
+  background: var(--card-bg);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  display: grid;
+  gap: 6px;
+  z-index: 20;
+
+  button {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    color: var(--color-text);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: var(--nav-pill-hover);
+    }
+  }
 }
 
 .back {
@@ -48,20 +110,21 @@
 }
 
 .bannerIcon {
-  width: 80px;
-  height: 80px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, #fff1f7 60%, #fbcfe8 100%);
-  box-shadow: 0 8px 28px rgba(249, 168, 212, 0.2);
+  width: 68px;
+  height: 68px;
+  border-radius: 20px;
+  background: var(--accent-pink);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12), 0 8px 22px rgba(192, 38, 126, 0.25);
   display: grid;
   place-items: center;
-  color: $brand;
-  border: 4px solid var(--color-bg);
+  color: #fff;
+  border: 3px solid var(--color-brand-light);
   position: absolute;
   left: 50%;
-  bottom: -40px;
+  bottom: -30px;
   transform: translateX(-50%);
   transition: transform 0.3s $ease-out;
+  z-index: 3;
 }
 
 /* Accent banner colors */

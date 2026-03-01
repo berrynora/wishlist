@@ -14,6 +14,7 @@ export function ReservedItemsGrid({ items, onToggleReserve }: Props) {
     <div className={styles.grid}>
       {items.map((item) => (
         <div key={item.item_id} className={styles.cardWrap}>
+          <div className={styles.ownerLine}> For {item.owner_name}</div>
           <ReservedItemCard
             {...item}
             onToggleReserve={onToggleReserve}

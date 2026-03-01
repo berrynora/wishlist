@@ -1,6 +1,7 @@
 import { useFriendsUpcomingWishlists } from "@/hooks/use-wishlists";
 import styles from "./UpcomingEvents.module.scss";
 import { getDaysUntil, formatShortDate, getDaysText } from "@/lib/discover-helper";
+import { CalendarDays } from "lucide-react";
 
 export function UpcomingEvents() {
   const { data: upcomingWishlists, isLoading } = useFriendsUpcomingWishlists();
@@ -14,9 +15,14 @@ export function UpcomingEvents() {
 
   return (
     <div className={styles.card}>
-      <div>
-        <strong>"Upcoming Events"</strong>
-        <p>{title}</p>
+      <div className={styles.titleRow}>
+        <span className={styles.iconCircle} aria-hidden="true">
+          <CalendarDays size={18} />
+        </span>
+        <div>
+          <strong>Upcoming Events</strong>
+          <p>{title}</p>
+        </div>
       </div>
 
       <div className={styles.dates}>

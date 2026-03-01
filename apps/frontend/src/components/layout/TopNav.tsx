@@ -97,50 +97,54 @@ export function TopNav() {
         </nav>
 
         <div className={styles.right}>
-          {isSearchVisible && (
-            <div className={styles.search} ref={searchRef}>
-              <Search size={16} />
-              <input
-                placeholder="Search wishlists..."
-                value={query}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setQuery(val);
-                  setShowResults(true);
-                  const params = new URLSearchParams(searchParams.toString());
-                  if (val) params.set("search", val);
-                  else params.delete("search");
-                  router.replace(`${pathname}?${params.toString()}`, {
-                    scroll: false,
-                  });
-                }}
-                onFocus={() => query && setShowResults(true)}
-              />
+          <div className={styles.searchSlot}>
+            {isSearchVisible ? (
+              <div className={styles.search} ref={searchRef}>
+                <Search size={16} />
+                <input
+                  placeholder="Search wishlists..."
+                  value={query}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setQuery(val);
+                    setShowResults(true);
+                    const params = new URLSearchParams(searchParams.toString());
+                    if (val) params.set("search", val);
+                    else params.delete("search");
+                    router.replace(`${pathname}?${params.toString()}`, {
+                      scroll: false,
+                    });
+                  }}
+                  onFocus={() => query && setShowResults(true)}
+                />
 
-              {showResults && debouncedQuery && (
-                <div className={styles.searchDropdown}>
-                  {results.length === 0 ? (
-                    <div className={styles.searchEmpty}>No wishlists found</div>
-                  ) : (
-                    results.map((w) => (
-                      <div
-                        key={w.id}
-                        className={styles.searchItem}
-                        onClick={() => {
-                          router.push(`/wishlist/${w.id}`);
-                          setQuery("");
-                          setShowResults(false);
-                        }}
-                      >
-                        <strong>{w.title}</strong>
-                        <span>{w.itemsCount ?? 0} items</span>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+                {showResults && debouncedQuery && (
+                  <div className={styles.searchDropdown}>
+                    {results.length === 0 ? (
+                      <div className={styles.searchEmpty}>No wishlists found</div>
+                    ) : (
+                      results.map((w) => (
+                        <div
+                          key={w.id}
+                          className={styles.searchItem}
+                          onClick={() => {
+                            router.push(`/wishlist/${w.id}`);
+                            setQuery("");
+                            setShowResults(false);
+                          }}
+                        >
+                          <strong>{w.title}</strong>
+                          <span>{w.itemsCount ?? 0} items</span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className={styles.searchPlaceholder} aria-hidden="true" />
+            )}
+          </div>
 
           <ThemeToggle />
           <NotificationsMenu />

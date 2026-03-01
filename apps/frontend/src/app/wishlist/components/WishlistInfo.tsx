@@ -2,7 +2,7 @@
 
 import styles from "./WishlistInfo.module.scss";
 import { Button } from "@/components/ui/Button/Button";
-import { Calendar, Pencil, Plus, Trash2 } from "lucide-react";
+import { Calendar, Plus } from "lucide-react";
 import { Wishlist } from "@/types/wishlist";
 import {
   visibilityLabel,
@@ -44,20 +44,6 @@ export function WishlistInfo({
               <Plus size={14} />
               <span>Add Item</span>
             </Button>
-            <button
-              className={styles.iconBtn}
-              onClick={onEdit}
-              title="Edit wishlist"
-            >
-              <Pencil size={15} />
-            </button>
-            <button
-              className={`${styles.iconBtn} ${styles.dangerBtn}`}
-              onClick={onDelete}
-              title="Delete wishlist"
-            >
-              <Trash2 size={15} />
-            </button>
           </div>
         )}
       </div>

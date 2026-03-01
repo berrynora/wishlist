@@ -1,10 +1,14 @@
+@use "@/styles/variables" as *;
+
 .filters {
+  width: 100%;
   background: var(--nav-pill-bg);
   border-radius: 999px;
   padding: 5px;
-  display: inline-flex;
+  display: flex;
   gap: 4px;
   margin-bottom: 24px;
+  align-items: center;
 
   button {
     border: none;
@@ -16,6 +20,9 @@
     color: var(--color-text-muted);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 
     &:hover:not(.active) {
       background: var(--nav-pill-hover);

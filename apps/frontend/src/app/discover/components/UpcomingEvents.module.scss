@@ -1,10 +1,11 @@
 @use "@/styles/variables" as *;
 
 .card {
-  background: var(--gradient-brand-subtle);
-  border: 1px solid var(--card-border);
+  background: linear-gradient(135deg, rgba(224, 82, 160, 0.08), rgba(224, 82, 160, 0.03));
+  border: 1px solid rgba(224, 82, 160, 0.25);
   border-radius: $radius-lg;
-  padding: 18px;
+  padding: 22px 20px;
+  min-height: 112px;
   margin-bottom: 24px;
 
   display: flex;
@@ -29,6 +30,24 @@
     font-size: 13px;
     color: var(--color-text-muted);
   }
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconCircle {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(224, 82, 160, 0.1);
+  color: #d94895;
+  border: 1px solid rgba(224, 82, 160, 0.18);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 10px rgba(224, 82, 160, 0.12);
 }
 
 .dates {
