@@ -16,7 +16,11 @@
     right: -18%;
     width: 280px;
     height: 280px;
-    background: radial-gradient(circle, var(--radial-brand) 0%, transparent 70%);
+    background: radial-gradient(
+      circle,
+      var(--radial-brand) 0%,
+      transparent 70%
+    );
     pointer-events: none;
   }
 }
@@ -54,6 +58,17 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+.limitCounter {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-muted;
+  padding: 4px 12px;
+  border-radius: $radius-pill;
+  background: var(--color-bg-muted);
+  border: 1px solid var(--color-border-light);
+  white-space: nowrap;
 }
 
 .iconBtn {

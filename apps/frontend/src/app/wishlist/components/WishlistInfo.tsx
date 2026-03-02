@@ -1,13 +1,13 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import styles from "./WishlistInfo.module.scss";
 import { Button } from "@/components/ui/Button/Button";
-import { Calendar, Plus } from "lucide-react";
+import { Calendar, Plus, Sparkles } from "lucide-react";
 import { Wishlist } from "@/types/wishlist";
-import {
-  visibilityLabel,
-  visibilityIcon,
-} from "@/lib/helpers/wishlist-helper";
+import { visibilityLabel, visibilityIcon } from "@/lib/helpers/wishlist-helper";
+import { useSubscription } from "@/hooks/use-subscription";
+import { FREE_LIMITS } from "@/types/subscription";
 
 type Props = {
   wishlist: Wishlist;
@@ -24,11 +24,23 @@ export function WishlistInfo({
   onDelete,
   isOwner = false,
 }: Props) {
+  const { isPro } = useSubscription();
+  const router = useRouter();
   const visibility = visibilityLabel[wishlist.visibility_type] ?? "Private";
   const VisibilityIcon = visibilityIcon[wishlist.visibility_type];
   const itemsCount = wishlist.itemsCount ?? 0;
   const description = wishlist.description ?? "";
   const eventDate = (wishlist as Wishlist & { event_date?: string }).event_date;
+
+  const atItemLimit = !isPro && itemsCount >= FREE_LIMITS.maxItemsPerWishlist;
+
+  function handleAddItem() {
+    if (atItemLimit) {
+      router.push("/subscription");
+    } else {
+      onAddItem?.();
+    }
+  }
 
   return (
     <div className={styles.info}>
@@ -40,9 +52,23 @@ export function WishlistInfo({
 
         {isOwner && (
           <div className={styles.ownerActions}>
-            <Button size="sm" onClick={onAddItem}>
-              <Plus size={14} />
-              <span>Add Item</span>
+            {!isPro && (
+              <span className={styles.limitCounter}>
+                {itemsCount}/{FREE_LIMITS.maxItemsPerWishlist} items
+              </span>
+            )}
+            <Button size="sm" onClick={handleAddItem}>
+              {atItemLimit ? (
+                <>
+                  <Sparkles size={14} />
+                  <span>Upgrade to Add</span>
+                </>
+              ) : (
+                <>
+                  <Plus size={14} />
+                  <span>Add Item</span>
+                </>
+              )}
             </Button>
           </div>
         )}

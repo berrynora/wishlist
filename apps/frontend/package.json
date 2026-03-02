@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@revenuecat/purchases-js": "^1.26.4",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.94.0",
     "@tanstack/react-query": "^5.90.20",

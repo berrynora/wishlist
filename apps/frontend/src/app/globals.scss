@@ -128,6 +128,24 @@
   // Search
   --search-hover-bg: #fdf2f8;
 
+  // Pro subscription
+  --color-pro-gradient: linear-gradient(135deg, #c0267e, #e052a0, #f472b6);
+  --color-pro-bg: linear-gradient(
+    135deg,
+    #fdf2f8 0%,
+    #fce7f3 50%,
+    #fbcfe8 100%
+  );
+  --color-pro-border: rgba(192, 38, 126, 0.25);
+  --color-pro-glow: 0 0 40px rgba(192, 38, 126, 0.15);
+  --color-pro-card-bg: linear-gradient(
+    160deg,
+    #fffafa,
+    #fdf2f8 40%,
+    #fce7f3 100%
+  );
+  --color-free-card-bg: #ffffff;
+
   // Accent gradients
   --accent-pink: linear-gradient(135deg, #fde7f3 0%, #fbcfe8 50%, #f9a8d4 100%);
   --accent-blue: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
@@ -271,6 +289,24 @@
 
   // Search
   --search-hover-bg: #1e1520;
+
+  // Pro subscription
+  --color-pro-gradient: linear-gradient(135deg, #e052a0, #f472b6, #f9a8d4);
+  --color-pro-bg: linear-gradient(
+    135deg,
+    #2a1220 0%,
+    #3d1a2e 50%,
+    #4a1834 100%
+  );
+  --color-pro-border: rgba(224, 82, 160, 0.3);
+  --color-pro-glow: 0 0 40px rgba(224, 82, 160, 0.12);
+  --color-pro-card-bg: linear-gradient(
+    160deg,
+    #1a1220,
+    #221828 40%,
+    #2a1530 100%
+  );
+  --color-free-card-bg: #161619;
 
   // Accent gradients (muted for dark)
   --accent-pink: linear-gradient(135deg, #3d1a2e 0%, #4a1834 50%, #551540 100%);

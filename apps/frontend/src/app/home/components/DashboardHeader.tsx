@@ -1,18 +1,19 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button/Button";
 import styles from "./DashboardHeader.module.scss";
-import { Plus } from "lucide-react";
-import { useCurrentUser } from "@/hooks/use-user";
+import { Plus, Sparkles } from "lucide-react";
+import { useCurrentUser, useMyStatistics } from "@/hooks/use-user";
+import { useSubscription } from "@/hooks/use-subscription";
+import { FREE_LIMITS } from "@/types/subscription";
+import { ProBadge } from "@/components/ui/ProBadge/ProBadge";
 
 function getDisplayName(nameSource?: {
   email?: string | null;
   user_metadata?: Record<string, unknown>;
 }): string {
-  const metadata = (nameSource?.user_metadata ?? {}) as Record<
-    string,
-    unknown
-  >;
+  const metadata = (nameSource?.user_metadata ?? {}) as Record<string, unknown>;
 
   const rawFull = metadata.full_name ?? metadata.name;
   const rawFirst = metadata.first_name;
@@ -39,7 +40,21 @@ type Props = {
 
 export function DashboardHeader({ onNewWishlist }: Props) {
   const { data: user } = useCurrentUser();
+  const { data: stats } = useMyStatistics();
+  const { isPro } = useSubscription();
+  const router = useRouter();
   const displayName = getDisplayName(user ?? undefined);
+
+  const wishlistCount = stats?.wishlists_count ?? 0;
+  const atLimit = !isPro && wishlistCount >= FREE_LIMITS.maxWishlists;
+
+  function handleNewWishlist() {
+    if (atLimit) {
+      router.push("/subscription");
+    } else {
+      onNewWishlist();
+    }
+  }
 
   return (
     <div className={styles.header}>
@@ -50,10 +65,26 @@ export function DashboardHeader({ onNewWishlist }: Props) {
         </p>
       </div>
 
-      <Button size="sm" onClick={onNewWishlist}>
-        <Plus size={18} />
-        <span>Add Wishlist</span>
-      </Button>
+      <div className={styles.actions}>
+        {!isPro && (
+          <span className={styles.limitCounter}>
+            {wishlistCount}/{FREE_LIMITS.maxWishlists} wishlists
+          </span>
+        )}
+        <Button size="sm" onClick={handleNewWishlist}>
+          {atLimit ? (
+            <>
+              <Sparkles size={18} />
+              <span>Upgrade to Add</span>
+            </>
+          ) : (
+            <>
+              <Plus size={18} />
+              <span>Add Wishlist</span>
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 }

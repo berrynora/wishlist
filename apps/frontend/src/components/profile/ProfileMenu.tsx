@@ -3,9 +3,11 @@
 import styles from "./ProfileMenu.module.scss";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, Crown, Settings } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import { logout } from "@/api/login";
+import { useSubscription } from "@/hooks/use-subscription";
+import { ProBadge } from "@/components/ui/ProBadge/ProBadge";
 
 type Props = {
   onOpen?: () => void;
@@ -13,6 +15,7 @@ type Props = {
 
 export function ProfileMenu({ onOpen }: Props) {
   const router = useRouter();
+  const { isPro } = useSubscription();
 
   const [open, setOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -73,6 +76,11 @@ export function ProfileMenu({ onOpen }: Props) {
         onClick={toggleOpen}
       >
         {userInitial}
+        {isPro && (
+          <span className={styles.avatarProBadge}>
+            <ProBadge size="sm" />
+          </span>
+        )}
       </button>
 
       {open && (
@@ -86,6 +94,31 @@ export function ProfileMenu({ onOpen }: Props) {
               </span>
             </div>
           </div>
+
+          <button
+            type="button"
+            className={styles.menuItemSub}
+            onClick={() => {
+              setOpen(false);
+              router.push("/subscription");
+            }}
+          >
+            <Crown size={16} />
+            <span>Subscription</span>
+            {isPro && <ProBadge size="sm" />}
+          </button>
+
+          <button
+            type="button"
+            className={styles.menuItemSub}
+            onClick={() => {
+              setOpen(false);
+              router.push("/settings");
+            }}
+          >
+            <Settings size={16} />
+            <span>Settings</span>
+          </button>
 
           <button
             type="button"
