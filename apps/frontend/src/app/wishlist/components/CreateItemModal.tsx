@@ -29,6 +29,8 @@ export function CreateItemModal({ open, onClose, wishlistId }: Props) {
   const [price, setPrice] = useState("");
   const [priority, setPriority] = useState<PriorityOption>("None");
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageObjectUrl, setImageObjectUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,6 +42,12 @@ export function CreateItemModal({ open, onClose, wishlistId }: Props) {
     }
   }, [open]);
 
+  useEffect(() => {
+    return () => {
+      if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
+    };
+  }, [imageObjectUrl]);
+
   function resetForm() {
     setLink("");
     setName("");
@@ -47,11 +55,16 @@ export function CreateItemModal({ open, onClose, wishlistId }: Props) {
     setPrice("");
     setPriority("None");
     setImagePreview("");
+    setImageFile(null);
+    if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
+    setImageObjectUrl(null);
     setError(null);
   }
 
   function handleSubmit() {
     if (!name.trim() || !wishlistId || isPending) return;
+
+    const imageUrlToSave = imageFile ? null : imagePreview || null;
 
     const payload: CreateItemParams = {
       wishlist_id: wishlistId,
@@ -60,7 +73,8 @@ export function CreateItemModal({ open, onClose, wishlistId }: Props) {
       price: price.trim() || null,
       priority: priority === "None" ? null : priorityToValue[priority],
       url: link.trim() || null, // original link user pasted
-      image_url: imagePreview || null, // scraped or uploaded image URL/base64
+      image: imageFile,
+      image_url: imageUrlToSave,
     };
 
     mutate(payload, {
@@ -74,11 +88,13 @@ export function CreateItemModal({ open, onClose, wishlistId }: Props) {
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImagePreview(typeof reader.result === "string" ? reader.result : "");
-    };
-    reader.readAsDataURL(file);
+
+    if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
+    const objectUrl = URL.createObjectURL(file);
+    setImageObjectUrl(objectUrl);
+
+    setImageFile(file);
+    setImagePreview(objectUrl);
   }
 
   async function handleScrape() {
@@ -115,7 +131,12 @@ export function CreateItemModal({ open, onClose, wishlistId }: Props) {
         if (product.title) setName(product.title);
         if (product.description) setDescription(product.description);
         if (product.price) setPrice(product.price);
-        if (product.image) setImagePreview(product.image);
+        if (product.image) {
+          if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
+          setImageObjectUrl(null);
+          setImageFile(null);
+          setImagePreview(product.image);
+        }
       } else {
         setError(data?.error || "Помилка при завантаженні");
       }

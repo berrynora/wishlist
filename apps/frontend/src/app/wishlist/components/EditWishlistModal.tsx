@@ -15,6 +15,8 @@ type Props = {
 };
 
 export function EditWishlistModal({ open, onClose, wishlist }: Props) {
+  if (!open) return null;
+
   return (
     <EditWishlistForm
       open={open}
