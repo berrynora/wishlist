@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
 import { useUpdateItem } from "@/hooks/use-items";
@@ -31,10 +31,18 @@ type Props = {
 export function EditItemModal({ open, onClose, item }: Props) {
   if (!open) return null;
 
-  return <EditItemForm item={item} onClose={onClose} />;
+  return <EditItemForm open={open} item={item} onClose={onClose} />;
 }
 
-function EditItemForm({ item, onClose }: { item: Item; onClose: () => void }) {
+function EditItemForm({
+  open,
+  item,
+  onClose,
+}: {
+  open: boolean;
+  item: Item;
+  onClose: () => void;
+}) {
   const [name, setName] = useState(item.name ?? "");
   const [description, setDescription] = useState(item.description ?? "");
   const [price, setPrice] = useState(item.price ?? "");
@@ -43,17 +51,27 @@ function EditItemForm({ item, onClose }: { item: Item; onClose: () => void }) {
   );
   const [link, setLink] = useState(item.url ?? "");
   const [imagePreview, setImagePreview] = useState(item.image_url ?? "");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageObjectUrl, setImageObjectUrl] = useState<string | null>(null);
 
   const { mutate, isPending } = useUpdateItem();
+
+  useEffect(() => {
+    return () => {
+      if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
+    };
+  }, [imageObjectUrl]);
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImagePreview(typeof reader.result === "string" ? reader.result : "");
-    };
-    reader.readAsDataURL(file);
+
+    if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
+    const objectUrl = URL.createObjectURL(file);
+    setImageObjectUrl(objectUrl);
+
+    setImageFile(file);
+    setImagePreview(objectUrl);
   }
 
   function handleSubmit() {
@@ -65,14 +83,16 @@ function EditItemForm({ item, onClose }: { item: Item; onClose: () => void }) {
       price: price.trim() || null,
       priority: priority === "None" ? null : priorityToValue[priority],
       url: link.trim() || null,
-      image_url: imagePreview || null,
+      ...(imageFile
+        ? { image: imageFile }
+        : { image_url: imagePreview || null }),
     };
 
     mutate({ id: item.id, updates }, { onSuccess: () => onClose() });
   }
 
   return (
-    <Modal open={true} onClose={onClose}>
+    <Modal open={open} onClose={onClose}>
       <div className={styles.container}>
         <div className={styles.header}>
           <h2>Edit Item</h2>

@@ -129,6 +129,7 @@ export function WishlistItemCard({
                 {menuOpen && (
                   <div className={styles.dropdown}>
                     <button
+                      type="button"
                       className={styles.dropdownItem}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -139,7 +140,8 @@ export function WishlistItemCard({
                       <span>Edit</span>
                     </button>
                     <button
-                      className={styles.dropdownItem}
+                      type="button"
+                      className={`${styles.dropdownItem} ${styles.dangerItem}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         setMenuOpen(false);

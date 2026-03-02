@@ -4,6 +4,7 @@ export interface CreateItemParams {
   description?: string | null;
   price?: string | null;
   priority?: number | null;
+  image?: File | null;
   image_url?: string | null;
   url?: string | null;
   status?: number;
@@ -18,4 +19,6 @@ export interface UpdateItemParams {
   url?: string | null;
   status?: number;
   reserved_by?: string | null;
+  image?: File | null;
+  removeImage?: boolean;
 }

@@ -111,9 +111,21 @@ export async function createWishlist({
 
   if (error) throw error;
 
+  if (visibility === WishlistVisibility.Public || visibility === WishlistVisibility.FriendsOnly) {
+    // Викликаємо SQL функцію для створення нотифікацій
+    const { error: notifyError } = await supabaseBrowser.rpc(
+      'notify_friends_about_new_wishlist',
+      { p_wishlist_id: data.id }
+    );
+
+
+    if (notifyError) {
+      console.error('Failed to notify friends:', notifyError);
+    }
+  }
+
   return data;
 }
-
 export async function updateWishlist(
   wishlistId: string,
   updates: UpdateWishlistParams,

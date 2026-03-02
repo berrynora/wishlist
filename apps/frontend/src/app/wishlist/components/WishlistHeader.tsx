@@ -65,6 +65,7 @@ export function WishlistHeader({
                 <div className={styles.menuDropdown}>
                   <button
                     type="button"
+                    className={styles.menuItem}
                     onClick={() => {
                       setMenuOpen(false);
                       onEdit?.();
@@ -74,6 +75,7 @@ export function WishlistHeader({
                   </button>
                   <button
                     type="button"
+                    className={`${styles.menuItem} ${styles.dangerItem}`}
                     onClick={() => {
                       setMenuOpen(false);
                       onDelete?.();
