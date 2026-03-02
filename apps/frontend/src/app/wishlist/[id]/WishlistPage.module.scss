@@ -1,7 +1,7 @@
 @use "@/styles/variables" as *;
 
 .page {
-  p {
+  > p {
     max-width: 1200px;
     margin: 0 auto;
     padding: 16px 24px;

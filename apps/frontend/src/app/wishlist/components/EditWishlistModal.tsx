@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
 import { useUpdateWishlist } from "@/hooks/use-wishlists";
@@ -15,10 +15,9 @@ type Props = {
 };
 
 export function EditWishlistModal({ open, onClose, wishlist }: Props) {
-  if (!open) return null;
-
   return (
     <EditWishlistForm
+      open={open}
       key={`${wishlist.id}-${wishlist.event_date ?? "no-date"}`}
       wishlist={wishlist}
       onClose={onClose}
@@ -60,9 +59,11 @@ const colorToAccent: Record<ColorOption, WishlistAccent> = {
 };
 
 function EditWishlistForm({
+  open,
   wishlist,
   onClose,
 }: {
+  open: boolean;
   wishlist: Wishlist;
   onClose: () => void;
 }) {
@@ -75,10 +76,11 @@ function EditWishlistForm({
     accentToColor[wishlist.accent_type] ?? "pink",
   );
   const [eventDate, setEventDate] = useState(() => {
-    const raw = wishlist.event_date ?? (wishlist as Wishlist & { event_date?: string }).event_date;
+    const raw =
+      wishlist.event_date ??
+      (wishlist as Wishlist & { event_date?: string }).event_date;
     return raw ? String(raw).split("T")[0] : "";
   });
-
 
   const { mutate, isPending } = useUpdateWishlist();
 
@@ -101,11 +103,12 @@ function EditWishlistForm({
   }
 
   return (
-    <Modal open={true} onClose={onClose}>
+    <Modal open={open} onClose={onClose}>
       <div className={styles.container}>
         <div className={styles.header}>
           <div>
             <h2>Edit Wishlist</h2>
+            <p>Update your wishlist details and customize its appearance.</p>
           </div>
         </div>
 
@@ -198,7 +201,7 @@ function PrivacyCard({
   selected,
   onClick,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   subtitle: string;
   selected: boolean;
