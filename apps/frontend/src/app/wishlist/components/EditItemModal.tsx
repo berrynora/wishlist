@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
 import { useUpdateItem } from "@/hooks/use-items";
+import { useSubscription } from "@/hooks/use-subscription";
 import { Item } from "@/types/item";
 import type { UpdateItemParams } from "@/api/types/item";
 import styles from "./CreateItemModal.module.scss";
@@ -55,6 +56,7 @@ function EditItemForm({
   const [imageObjectUrl, setImageObjectUrl] = useState<string | null>(null);
 
   const { mutate, isPending } = useUpdateItem();
+  const { isPro } = useSubscription();
 
   useEffect(() => {
     return () => {
@@ -77,16 +79,25 @@ function EditItemForm({
   function handleSubmit() {
     if (!name.trim() || isPending) return;
 
+    const priorityValue = priority === "None" ? null : priorityToValue[priority];
+
     const updates: UpdateItemParams = {
       name: name.trim(),
       description: description.trim() || null,
       price: price.trim() || null,
-      priority: priority === "None" ? null : priorityToValue[priority],
       url: link.trim() || null,
       ...(imageFile
         ? { image: imageFile }
         : { image_url: imagePreview || null }),
     };
+
+    // Priority is a Pro-only feature.
+    // For non-Pro users we always send null as requested.
+    if (!isPro) {
+      updates.priority = null;
+    } else {
+      updates.priority = priorityValue;
+    }
 
     mutate({ id: item.id, updates }, { onSuccess: () => onClose() });
   }
@@ -159,18 +170,20 @@ function EditItemForm({
           />
         </div>
 
-        <div className={styles.field}>
-          <label>Priority</label>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value as PriorityOption)}
-          >
-            <option value="None">No priority</option>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-          </select>
-        </div>
+        {isPro && (
+          <div className={styles.field}>
+            <label>Priority</label>
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as PriorityOption)}
+            >
+              <option value="None">No priority</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+        )}
 
         <div className={styles.footer}>
           <Button variant="secondary" onClick={onClose}>

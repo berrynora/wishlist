@@ -2,6 +2,19 @@ import { supabaseBrowser } from "@/lib/supabase-browser";
 import { Item } from "@/types/item";
 import { CreateItemParams, UpdateItemParams } from "./types/item";
 import { getItems } from "./helpers/item-helper";
+import { getSubscriptionStatus } from "./subscription";
+import { SubscriptionPlan } from "@/types/subscription";
+
+async function ensureProForPriority(priority: number | null | undefined) {
+  if (priority == null) return;
+
+  const status = await getSubscriptionStatus();
+  const isPro = status.plan === SubscriptionPlan.Pro && status.isActive === true;
+
+  if (!isPro) {
+    throw new Error("Priority is available for Pro subscribers only");
+  }
+}
 
 export async function createItem({
   wishlist_id,
@@ -13,6 +26,9 @@ export async function createItem({
   image_url,
   url,
   status = 0,
+  discount_price,
+  has_discount,
+  discount_end_date,
 }: CreateItemParams): Promise<Item> {
   const {
     data: { session },
@@ -21,6 +37,8 @@ export async function createItem({
 
   if (sessionError) throw sessionError;
   if (!session?.user) throw new Error("Not authenticated");
+
+  await ensureProForPriority(priority);
 
   let finalImageUrl: string | null = null;
   let uploadedFile = false;
@@ -46,6 +64,9 @@ export async function createItem({
       image_url: finalImageUrl,
       url,
       status,
+      discount_price: discount_price ?? null,
+      has_discount: has_discount ?? false,
+      discount_end_date: discount_end_date ?? null,
     })
     .select()
     .single();
@@ -73,6 +94,8 @@ export async function updateItem(
   updates: UpdateItemParams,
 ): Promise<Item> {
   const { image, removeImage, image_url, ...restUpdates } = updates;
+
+  await ensureProForPriority(restUpdates.priority);
 
   if (image || removeImage || image_url !== undefined) {
 

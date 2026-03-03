@@ -8,6 +8,9 @@ export interface CreateItemParams {
   image_url?: string | null;
   url?: string | null;
   status?: number;
+  discount_price?: string | null;
+  has_discount?: boolean;
+  discount_end_date?: string | null;
 }
 
 export interface UpdateItemParams {
@@ -21,4 +24,7 @@ export interface UpdateItemParams {
   reserved_by?: string | null;
   image?: File | null;
   removeImage?: boolean;
+  discount_price?: string | null;
+  has_discount?: boolean;
+  discount_end_date?: string | null;
 }

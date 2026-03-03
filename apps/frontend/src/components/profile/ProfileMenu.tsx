@@ -8,6 +8,7 @@ import { supabaseBrowser } from "@/lib/supabase-browser";
 import { logout } from "@/api/login";
 import { useSubscription } from "@/hooks/use-subscription";
 import { ProBadge } from "@/components/ui/ProBadge/ProBadge";
+import { useProfile } from "@/hooks/use-settings";
 
 type Props = {
   onOpen?: () => void;
@@ -16,6 +17,7 @@ type Props = {
 export function ProfileMenu({ onOpen }: Props) {
   const router = useRouter();
   const { isPro } = useSubscription();
+  const { data: profile } = useProfile();
 
   const [open, setOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -68,6 +70,17 @@ export function ProfileMenu({ onOpen }: Props) {
     setOpen((prev) => !prev);
   }
 
+  const avatarUrl = profile?.avatar_url ?? null;
+  const displayInitial = (
+    profile?.display_name ??
+    profile?.nickname ??
+    userEmail ??
+    userInitial ??
+    "S"
+  )
+    .charAt(0)
+    .toUpperCase();
+
   return (
     <div className={styles.profile} ref={ref}>
       <button
@@ -75,7 +88,12 @@ export function ProfileMenu({ onOpen }: Props) {
         className={styles.avatarButton}
         onClick={toggleOpen}
       >
-        {userInitial}
+        {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={avatarUrl} alt="Avatar" className={styles.avatarImg} />
+        ) : (
+          displayInitial
+        )}
         {isPro && (
           <span className={styles.avatarProBadge}>
             <ProBadge size="sm" />
@@ -86,7 +104,18 @@ export function ProfileMenu({ onOpen }: Props) {
       {open && (
         <div className={styles.profileMenu}>
           <div className={styles.profileHeader}>
-            <div className={styles.profileInitial}>{userInitial}</div>
+            <div className={styles.profileInitial}>
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={avatarUrl}
+                  alt="Avatar"
+                  className={styles.avatarImg}
+                />
+              ) : (
+                displayInitial
+              )}
+            </div>
             <div className={styles.profileMeta}>
               <span className={styles.profileName}>Account</span>
               <span className={styles.profileEmail}>

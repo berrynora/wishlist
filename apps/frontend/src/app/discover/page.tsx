@@ -11,6 +11,7 @@ import {
   useFriendsWishlistsReservedByMe,
 } from "@/hooks/use-wishlists";
 import { useToggleItemReservation } from "@/hooks/use-items";
+import { useProfilesByIds } from "@/hooks/use-settings";
 
 export default function DiscoverPage() {
   const [filter, setFilter] = useState<"wishlists" | "reserved">("wishlists");
@@ -28,6 +29,26 @@ export default function DiscoverPage() {
   } = useFriendsWishlistsReservedByMe();
 
   const toggleReservation = useToggleItemReservation();
+
+  const friendIds = useMemo(() => {
+    return Array.from(
+      new Set(
+        (wishlistsSections ?? [])
+          .map((s) => s.friend_id)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    );
+  }, [wishlistsSections]);
+
+  const { data: sectionProfiles = [] } = useProfilesByIds(friendIds);
+
+  const avatarById = useMemo(() => {
+    const map = new Map<string, string | null>();
+    for (const p of sectionProfiles) {
+      map.set(p.id, p.avatar_url ?? null);
+    }
+    return map;
+  }, [sectionProfiles]);
 
   const isLoading = filter === "wishlists" ? isWishlistsLoading : isReservedLoading;
   const isError = filter === "wishlists" ? isWishlistsError : isReservedError;
@@ -59,6 +80,12 @@ export default function DiscoverPage() {
           <DiscoverSection
             key={section.id}
             {...section}
+            avatarUrl={
+              section.avatar_url ??
+              (section.friend_id
+                ? (avatarById.get(section.friend_id) ?? null)
+                : null)
+            }
             onToggleReserve={(itemId) => toggleReservation.mutate(itemId)}
           />
         ))}

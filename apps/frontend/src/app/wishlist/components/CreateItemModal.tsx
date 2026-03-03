@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
 import { useCreateItem } from "@/hooks/use-items";
+import { useSubscription } from "@/hooks/use-subscription";
 import styles from "./CreateItemModal.module.scss";
 
 import type { CreateItemParams } from "@/api/types/item";
@@ -33,14 +34,22 @@ export function CreateItemModal({ open, onClose, wishlistId }: Props) {
   const [imageObjectUrl, setImageObjectUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [discountPrice, setDiscountPrice] = useState<string | null>(null);
+  const [hasDiscount, setHasDiscount] = useState(false);
+  const [discountEndDate, setDiscountEndDate] = useState<string | null>(null);
 
   const { mutate, isPending } = useCreateItem();
+  const { isPro } = useSubscription();
 
   useEffect(() => {
     if (!open) {
       resetForm();
     }
   }, [open]);
+
+  useEffect(() => {
+    if (!isPro) setPriority("None");
+  }, [isPro]);
 
   useEffect(() => {
     return () => {
@@ -59,6 +68,9 @@ export function CreateItemModal({ open, onClose, wishlistId }: Props) {
     if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
     setImageObjectUrl(null);
     setError(null);
+    setDiscountPrice(null);
+    setHasDiscount(false);
+    setDiscountEndDate(null);
   }
 
   function handleSubmit() {
@@ -66,15 +78,21 @@ export function CreateItemModal({ open, onClose, wishlistId }: Props) {
 
     const imageUrlToSave = imageFile ? null : imagePreview || null;
 
+    const priorityValue = priority === "None" ? null : priorityToValue[priority];
+
     const payload: CreateItemParams = {
       wishlist_id: wishlistId,
       name: name.trim(),
       description: description.trim() || null,
       price: price.trim() || null,
-      priority: priority === "None" ? null : priorityToValue[priority],
+      // Priority is a Pro-only feature
+      priority: isPro ? priorityValue : null,
       url: link.trim() || null, // original link user pasted
       image: imageFile,
       image_url: imageUrlToSave,
+      discount_price: discountPrice,
+      has_discount: hasDiscount,
+      discount_end_date: discountEndDate,
     };
 
     mutate(payload, {
@@ -118,6 +136,9 @@ export function CreateItemModal({ open, onClose, wishlistId }: Props) {
           description: data?.description ?? null,
           image: data?.image ?? null,
           price: data?.price ?? null,
+          discount_price: data?.discount_price ?? null,
+          has_discount: data?.has_discount ?? false,
+          discount_end_date: data?.discount_end_date ?? null,
         };
 
         const isEmpty =
@@ -131,6 +152,9 @@ export function CreateItemModal({ open, onClose, wishlistId }: Props) {
         if (product.title) setName(product.title);
         if (product.description) setDescription(product.description);
         if (product.price) setPrice(product.price);
+        setDiscountPrice(product.discount_price);
+        setHasDiscount(product.has_discount);
+        setDiscountEndDate(product.discount_end_date);
         if (product.image) {
           if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
           setImageObjectUrl(null);
@@ -225,18 +249,20 @@ export function CreateItemModal({ open, onClose, wishlistId }: Props) {
           />
         </div>
 
-        <div className={styles.field}>
-          <label>Priority</label>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value as PriorityOption)}
-          >
-            <option value="None">No priority</option>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-          </select>
-        </div>
+        {isPro && (
+          <div className={styles.field}>
+            <label>Priority</label>
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as PriorityOption)}
+            >
+              <option value="None">No priority</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+        )}
 
         <div className={styles.footer}>
           <Button variant="secondary" onClick={onClose}>

@@ -1,5 +1,7 @@
 import { WishlistAccent } from "@/types/wishlist";
 
+export type WishlistColorIndex = 0 | 1 | 2 | 3 | 4;
+
 export interface UserProfile {
   id: string;
   display_name: string;
@@ -17,6 +19,8 @@ export interface UserSettings {
   email_digest: boolean;
   theme: ThemePreference;
   default_accent: WishlistAccent;
+  // 0-based index in UI order: pink, peach, blue, lavender, mint
+  default_wishlist_color: WishlistColorIndex;
 }
 
 export type ThemePreference = "light" | "dark" | "system";
@@ -47,4 +51,5 @@ export const DEFAULT_SETTINGS: Omit<UserSettings, "user_id"> = {
   email_digest: false,
   theme: "light",
   default_accent: WishlistAccent.Pink,
+  default_wishlist_color: 0,
 };

@@ -10,4 +10,7 @@ export interface Item {
   created_at: string;
   status: number;
   reserved_by: string | null;
+  discount_price: string | null;
+  has_discount: boolean;
+  discount_end_date: string | null;
 }
