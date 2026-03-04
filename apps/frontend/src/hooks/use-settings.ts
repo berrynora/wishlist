@@ -9,6 +9,7 @@ import {
   deleteAccount,
   getAuthProvider,
   checkNicknameAvailable,
+  getProfilesByIds,
 } from "@/api/settings";
 import type {
   UpdateProfilePayload,
@@ -21,6 +22,8 @@ export const settingsKeys = {
   profile: () => [...settingsKeys.all, "profile"] as const,
   preferences: () => [...settingsKeys.all, "preferences"] as const,
   provider: () => [...settingsKeys.all, "provider"] as const,
+  profilesByIds: (idsKey: string) =>
+    [...settingsKeys.all, "profiles-by-ids", idsKey] as const,
 };
 
 /* ── Profile ── */
@@ -57,6 +60,17 @@ export function useUploadAvatar() {
 export function useCheckNickname() {
   return useMutation({
     mutationFn: (nickname: string) => checkNicknameAvailable(nickname),
+  });
+}
+
+export function useProfilesByIds(userIds: string[]) {
+  const idsKey = userIds.length ? [...userIds].sort().join("|") : "";
+
+  return useQuery({
+    queryKey: settingsKeys.profilesByIds(idsKey),
+    queryFn: () => getProfilesByIds(userIds),
+    enabled: userIds.length > 0,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

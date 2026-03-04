@@ -1,10 +1,24 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider, useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import { initRevenueCat, resetRevenueCat } from "@/lib/revenuecat";
+import { useSettings } from "@/hooks/use-settings";
+
+function ThemeSettingsSync() {
+  const { data: settings } = useSettings();
+  const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    if (!settings?.theme) return;
+    if (theme === settings.theme) return;
+    setTheme(settings.theme);
+  }, [setTheme, settings?.theme, theme]);
+
+  return null;
+}
 
 function RevenueCatInitializer({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -47,10 +61,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider
       attribute="data-theme"
       defaultTheme="light"
-      enableSystem={false}
+      enableSystem
     >
       <QueryClientProvider client={queryClient}>
-        <RevenueCatInitializer>{children}</RevenueCatInitializer>
+        <ThemeSettingsSync />
+        {children}
       </QueryClientProvider>
     </ThemeProvider>
   );

@@ -48,6 +48,7 @@ export type DiscoverSection = {
   id: string;
   owner: string;
   username: string;
+  avatar_url?: string | null;
   wishlist: string;
   date?: string;
   friend_id?: string;

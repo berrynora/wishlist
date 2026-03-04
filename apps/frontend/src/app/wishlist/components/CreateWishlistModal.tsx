@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
 import { useCreateWishlist } from "@/hooks/use-wishlists";
+import { useSettings } from "@/hooks/use-settings";
 import { WishlistAccent, WishlistVisibility } from "@/types/wishlist";
 import { Globe, Users, Lock, Check } from "lucide-react";
 import styles from "./CreateWishlistModal.module.scss";
@@ -25,6 +26,7 @@ export function CreateWishlistModal({ open, onClose }: Props) {
   const [eventDate, setEventDate] = useState("");
 
   const { mutate, isPending } = useCreateWishlist();
+  const { data: settings } = useSettings();
 
   const privacyToVisibility: Record<PrivacyOption, WishlistVisibility> = {
     Public: WishlistVisibility.Public,
@@ -40,11 +42,19 @@ export function CreateWishlistModal({ open, onClose }: Props) {
     mint: WishlistAccent.Mint,
   };
 
+  const defaultColor: ColorOption =
+    colors[settings?.default_wishlist_color ?? 0] ?? "pink";
+
+  useEffect(() => {
+    if (!open) return;
+    setColor(defaultColor);
+  }, [defaultColor, open]);
+
   function resetForm() {
     setName("");
     setDescription("");
     setPrivacy("Public");
-    setColor("pink");
+    setColor(defaultColor);
     setEventDate("");
   }
 

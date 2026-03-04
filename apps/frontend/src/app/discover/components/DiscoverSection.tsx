@@ -8,19 +8,23 @@ import { DiscoverSection as Section } from "@/api/types/wishilst";
 
 type Props = Section & {
   onToggleReserve?: (itemId: string) => void;
+  avatarUrl?: string | null;
 };
 
 export function DiscoverSection({
   owner,
   username,
+  avatar_url,
   wishlist,
   wishlist_id,
   date,
   friend_id,
   items,
+  avatarUrl,
   onToggleReserve,
 }: Props) {
   const itemCount = items.length;
+  const resolvedAvatarUrl = avatarUrl ?? avatar_url ?? null;
 
   return (
     <section className={styles.section}>
@@ -28,7 +32,16 @@ export function DiscoverSection({
         <div className={styles.meta}>
           <div className={styles.identity}>
             <span className={styles.avatar} aria-hidden="true">
-              <UserRound size={16} />
+              {resolvedAvatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={resolvedAvatarUrl}
+                  alt=""
+                  className={styles.avatarImg}
+                />
+              ) : (
+                <UserRound size={16} />
+              )}
             </span>
 
             <div className={styles.title}>
