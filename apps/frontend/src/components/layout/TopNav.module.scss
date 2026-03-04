@@ -91,6 +91,10 @@
   position: relative;
   z-index: 1;
   color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
   transition: color 0.2s ease;
 }
 
@@ -244,6 +248,13 @@
     color: var(--color-brand);
     background: var(--brand-alpha-10);
   }
+}
+
+.bell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
 }
 
 .badge {
