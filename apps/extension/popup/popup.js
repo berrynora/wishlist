@@ -52,6 +52,9 @@ let productData = {
   price: null,
   image: null,
   url: null,
+  discount_price: null,
+  has_discount: false,
+  discount_end_date: null,
 };
 
 const ACCENT_CLASSES = ["pink", "blue", "peach", "mint", "lavender"];
@@ -167,24 +170,70 @@ googleBtn.addEventListener("click", async () => {
 async function initMainScreen() {
   showScreen(mainScreen);
 
-  // Extract product from active tab
+  let pageUrl = null;
+
+  // 1. Get the active tab URL
   try {
     const [tab] = await chrome.tabs.query({
       active: true,
       currentWindow: true,
     });
-
-    if (tab?.id) {
-      const response = await chrome.tabs.sendMessage(tab.id, {
-        type: "EXTRACT_PRODUCT",
-      });
-
-      if (response) {
-        productData = { ...productData, ...response };
-      }
+    if (tab?.url) {
+      pageUrl = tab.url;
+      productData.url = pageUrl;
     }
   } catch {
-    // Content script might not be injected (e.g. chrome:// pages)
+    // Can't access tab
+  }
+
+  // 2. Try server-side scraping first (much more reliable)
+  if (pageUrl && /^https?:\/\//.test(pageUrl)) {
+    try {
+      showLoadingState();
+      const scrapeRes = await sendMessage({
+        type: "SCRAPE_URL",
+        payload: { url: pageUrl },
+      });
+
+      if (scrapeRes?.product && !scrapeRes.product.error) {
+        const p = scrapeRes.product;
+        if (p.title) productData.title = p.title;
+        if (p.description) productData.description = p.description;
+        if (p.image) productData.image = p.image;
+        if (p.price) productData.price = p.price;
+        if (p.discount_price) productData.discount_price = p.discount_price;
+        if (p.has_discount) productData.has_discount = p.has_discount;
+        if (p.discount_end_date) productData.discount_end_date = p.discount_end_date;
+      }
+    } catch {
+      // Server scrape failed — will fall back to content script
+    }
+  }
+
+  // 3. Fall back to content script extraction if server didn't return enough data
+  if (!productData.title || !productData.price) {
+    try {
+      const [tab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+
+      if (tab?.id) {
+        const response = await chrome.tabs.sendMessage(tab.id, {
+          type: "EXTRACT_PRODUCT",
+        });
+
+        if (response) {
+          if (!productData.title && response.title) productData.title = response.title;
+          if (!productData.description && response.description) productData.description = response.description;
+          if (!productData.image && response.image) productData.image = response.image;
+          if (!productData.price && response.price) productData.price = response.price;
+          if (!productData.url && response.url) productData.url = response.url;
+        }
+      }
+    } catch {
+      // Content script might not be injected (e.g. chrome:// pages)
+    }
   }
 
   // Populate product fields
@@ -209,6 +258,13 @@ async function initMainScreen() {
 
   // Update add button state
   updateAddButton();
+}
+
+function showLoadingState() {
+  productTitle.value = "Loading...";
+  productPrice.value = "";
+  productImage.style.display = "none";
+  productPlaceholder.classList.remove("hidden");
 }
 
 async function loadWishlists() {
@@ -291,6 +347,9 @@ addBtn.addEventListener("click", async () => {
     price: productPrice.value.trim() || null,
     image_url: productData.image || null,
     url: productData.url || null,
+    discount_price: productData.discount_price || null,
+    has_discount: productData.has_discount || false,
+    discount_end_date: productData.discount_end_date || null,
   };
 
   const res = await sendMessage({ type: "ADD_ITEM", payload });

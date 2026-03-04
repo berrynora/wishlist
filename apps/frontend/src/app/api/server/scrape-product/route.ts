@@ -93,6 +93,48 @@ export async function scrapeProduct(url: string): Promise<ProductData | null> {
   return product;
 }
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+}
+
+export async function GET(request: NextRequest) {
+  const url = request.nextUrl.searchParams.get("url");
+
+  if (!url) {
+    return NextResponse.json(
+      { error: "Missing 'url' query parameter" },
+      { status: 400, headers: CORS_HEADERS }
+    );
+  }
+
+  try {
+    const product = await scrapeProduct(url);
+
+    if (!product) {
+      return NextResponse.json(
+        { error: "Could not extract any product data" },
+        { status: 404, headers: CORS_HEADERS }
+      );
+    }
+
+    return NextResponse.json(product, { headers: CORS_HEADERS });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: "Failed to scrape",
+        message: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500, headers: CORS_HEADERS }
+    );
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { url } = await request.json();
@@ -102,18 +144,18 @@ export async function POST(request: NextRequest) {
     if (!product) {
       return NextResponse.json(
         { error: "Could not extract any product data" },
-        { status: 404 }
+        { status: 404, headers: CORS_HEADERS }
       );
     }
 
-    return NextResponse.json(product);
+    return NextResponse.json(product, { headers: CORS_HEADERS });
   } catch (error) {
     return NextResponse.json(
       {
         error: "Failed to scrape",
         message: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500, headers: CORS_HEADERS }
     );
   }
 }
@@ -402,11 +444,71 @@ function scrapeFoxtrot(html: string, url: string): ProductData {
 
   const hasDiscount = Boolean(oldPrice && currentPrice && oldPrice !== currentPrice);
 
+  // Image: Foxtrot's og:image is often a generic store logo, not the product photo.
+  // Try product-specific selectors first, then fall back to og:image only if it looks real.
+  let image: string | null = null;
+
+  // 1. Product gallery / carousel images
+  const productImageSelectors = [
+    '[data-testid="product-image"] img',
+    '[data-testid="main-image"] img',
+    '[class*="product-gallery"] img',
+    '[class*="product-image"] img',
+    '[class*="product__image"] img',
+    '[class*="gallery"] img[src]',
+    '[class*="slider"] img[src]',
+    '[class*="carousel"] img[src]',
+    'img[itemprop="image"]',
+    '[data-product-image] img',
+    'picture source[srcset]',
+  ];
+
+  for (const selector of productImageSelectors) {
+    const el = $(selector).first();
+    if (el.length) {
+      const src = el.attr('src') || el.attr('srcset')?.split(/[\s,]+/)?.[0] || el.attr('data-src');
+      if (src && !src.includes('placeholder') && !src.includes('no-image')) {
+        image = src.startsWith('//') ? 'https:' + src : src;
+        break;
+      }
+    }
+  }
+
+  // 2. JSON-LD image
+  if (!image) {
+    $('script[type="application/ld+json"]').each((_, el) => {
+      if (image) return;
+      try {
+        const json = JSON.parse($(el).text());
+        const items = Array.isArray(json) ? json : [json];
+        for (const item of items) {
+          if (item["@type"] === "Product" && item.image) {
+            const img = Array.isArray(item.image) ? item.image[0] : item.image;
+            if (img && typeof img === 'string') { image = img; return; }
+            if (img?.url) { image = img.url; return; }
+          }
+        }
+      } catch { /* ignore */ }
+    });
+  }
+
+  // 3. og:image — only if it's NOT a generic store logo
+  if (!image) {
+    const ogImage = $('meta[property="og:image"]').attr("content");
+    if (ogImage && !/foxtrot\.(png|jpg|jpeg|svg|webp)/i.test(ogImage) && !/logo/i.test(ogImage)) {
+      image = ogImage;
+    }
+  }
+
+  // 4. Generic fallback
+  if (!image) {
+    image = extractImage($, url);
+  }
+
   return {
     title: $("h1").first().text().trim() || extractTitle($),
     description: extractDescription($),
-    image:
-      $('meta[property="og:image"]').attr("content") || extractImage($, url),
+    image,
     price: hasDiscount ? oldPrice : currentPrice,
     discount_price: hasDiscount ? currentPrice : null,
     has_discount: hasDiscount,

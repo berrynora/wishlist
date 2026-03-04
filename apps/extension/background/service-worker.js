@@ -12,6 +12,7 @@ importScripts("../config.js");
 
 const SUPABASE_URL = WISHLY_CONFIG.SUPABASE_URL;
 const SUPABASE_ANON_KEY = WISHLY_CONFIG.SUPABASE_ANON_KEY;
+const SITE_URL = WISHLY_CONFIG.SITE_URL;
 const SESSION_KEY = "wishly_session";
 
 /* ------------------------------------------------------------------ */
@@ -257,14 +258,35 @@ async function handleMessage(msg) {
       return { wishlists: await res.json() };
     }
 
+    /* ────────── Scrape URL via server ────────── */
+
+    case "SCRAPE_URL": {
+      const { url } = msg.payload;
+      if (!url) throw new Error("No URL provided");
+
+      const scrapeEndpoint = `${SITE_URL}/api/server/scrape-product?url=${encodeURIComponent(url)}`;
+
+      const res = await fetch(scrapeEndpoint);
+
+      if (!res.ok) {
+        console.warn("[Wishly] Server scrape failed:", res.status);
+        return { product: null };
+      }
+
+      const product = await res.json();
+      return { product };
+    }
+
     /* ────────── Add Item ────────── */
 
     case "ADD_ITEM": {
       const session = await getSession();
       if (!session) throw new Error("Not authenticated");
 
-      const { wishlist_id, name, description, price, image_url, url } =
-        msg.payload;
+      const {
+        wishlist_id, name, description, price, image_url, url,
+        discount_price, has_discount, discount_end_date,
+      } = msg.payload;
 
       const res = await fetch(`${SUPABASE_URL}/rest/v1/item`, {
         method: "POST",
@@ -283,6 +305,9 @@ async function handleMessage(msg) {
           url: url || null,
           status: 0,
           priority: null,
+          discount_price: discount_price || null,
+          has_discount: has_discount || false,
+          discount_end_date: discount_end_date || null,
         }),
       });
 
