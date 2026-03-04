@@ -65,7 +65,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     >
       <QueryClientProvider client={queryClient}>
         <ThemeSettingsSync />
-        <RevenueCatInitializer>{children}</RevenueCatInitializer>
+        {children}
       </QueryClientProvider>
     </ThemeProvider>
   );
