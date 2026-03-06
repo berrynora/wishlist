@@ -111,16 +111,18 @@ export async function createWishlist({
 
   if (error) throw error;
 
-  if (visibility === WishlistVisibility.Public || visibility === WishlistVisibility.FriendsOnly) {
+  if (
+    visibility === WishlistVisibility.Public ||
+    visibility === WishlistVisibility.FriendsOnly
+  ) {
     // Викликаємо SQL функцію для створення нотифікацій
     const { error: notifyError } = await supabaseBrowser.rpc(
-      'notify_friends_about_new_wishlist',
-      { p_wishlist_id: data.id }
+      "notify_friends_about_new_wishlist",
+      { p_wishlist_id: data.id },
     );
 
-
     if (notifyError) {
-      console.error('Failed to notify friends:', notifyError);
+      console.error("Failed to notify friends:", notifyError);
     }
   }
 
@@ -139,7 +141,8 @@ export async function updateWishlist(
     dbUpdates.visibility_type = updates.visibility;
   if (updates.imageUrl !== undefined) dbUpdates.image_url = updates.imageUrl;
   if (updates.accent !== undefined) dbUpdates.accent_type = updates.accent;
-  if (updates.event_date !== undefined) dbUpdates.event_date = updates.event_date;
+  if (updates.event_date !== undefined)
+    dbUpdates.event_date = updates.event_date;
 
   const { data, error } = await supabaseBrowser
     .from("wishlist")
@@ -163,13 +166,13 @@ export async function deleteWishlist(wishlistId: string): Promise<void> {
 }
 
 export async function getWishlistById(wishlistId: string): Promise<Wishlist> {
-  const { data, error } = await supabaseBrowser.rpc('get_wishlist_by_id', {
+  const { data, error } = await supabaseBrowser.rpc("get_wishlist_by_id", {
     p_wishlist_id: wishlistId,
   });
 
   if (error) {
-    console.error('Error fetching wishlist:', error);
-    throw new Error(error.message || 'Failed to fetch wishlist');
+    console.error("Error fetching wishlist:", error);
+    throw new Error(error.message || "Failed to fetch wishlist");
   }
 
   return data as Wishlist;
