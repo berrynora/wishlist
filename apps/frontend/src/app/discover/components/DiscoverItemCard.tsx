@@ -9,6 +9,7 @@ import { useCurrentUserId } from "@/hooks/use-user";
 
 type Props = DiscoverItem & {
   onToggleReserve?: (id: string) => void;
+  showDiscountBadge?: boolean;
 };
 
 export function DiscoverItemCard({
@@ -24,7 +25,9 @@ export function DiscoverItemCard({
   priority,
   reservedBy,
   share_url,
+  discount_price,
   onToggleReserve,
+  showDiscountBadge = false,
 }: Props) {
   const [detailOpen, setDetailOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -44,6 +47,42 @@ export function DiscoverItemCard({
         : price
           ? `$${price}`
           : "";
+
+  function parsePriceToNumber(
+    value: string | number | null | undefined,
+  ): number | null {
+    if (value == null) return null;
+    if (typeof value === "number") return Number.isFinite(value) ? value : null;
+
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+
+    const safe = trimmed.replace(/[^0-9,.-]/g, "");
+    if (!safe) return null;
+
+    const hasComma = safe.includes(",");
+    const hasDot = safe.includes(".");
+    const normalized =
+      hasComma && hasDot ? safe.replace(/,/g, "") : safe.replace(/,/g, ".");
+
+    const n = Number.parseFloat(normalized);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  const salePercentOff = (() => {
+    if (!showDiscountBadge) return null;
+    if (discount_price == null) return null;
+
+    const base = parsePriceToNumber(price);
+    const discounted = parsePriceToNumber(discount_price);
+    if (!base || !discounted) return null;
+    if (base <= 0 || discounted >= base) return null;
+
+    const raw = ((base - discounted) / base) * 100;
+    const rounded = Math.round(raw);
+    if (!Number.isFinite(rounded) || rounded <= 0) return null;
+    return Math.min(99, rounded);
+  })();
 
     useEffect(() => {
       function handleClickOutside(e: MouseEvent) {
@@ -77,6 +116,9 @@ export function DiscoverItemCard({
   return (
     <>
       <div className={styles.card} onClick={() => setDetailOpen(true)}>
+        {salePercentOff != null && (
+          <span className={styles.saleBadge}>Sale -{salePercentOff}%</span>
+        )}
         {priority && <span className={styles.priority}>{priority}</span>}
 
         <div className={styles.imageWrapper}>

@@ -12,6 +12,7 @@ import {
 } from "@/hooks/use-wishlists";
 import { useToggleItemReservation } from "@/hooks/use-items";
 import { useProfilesByIds } from "@/hooks/use-settings";
+import { useSubscription } from "@/hooks/use-subscription";
 
 export default function DiscoverPage() {
   const [filter, setFilter] = useState<"wishlists" | "reserved">("wishlists");
@@ -27,6 +28,7 @@ export default function DiscoverPage() {
     isLoading: isReservedLoading,
     isError: isReservedError,
   } = useFriendsWishlistsReservedByMe();
+  const { isPro } = useSubscription();
 
   const toggleReservation = useToggleItemReservation();
 
@@ -80,6 +82,7 @@ export default function DiscoverPage() {
           <DiscoverSection
             key={section.id}
             {...section}
+            showDiscountBadge={isPro}
             avatarUrl={
               section.avatar_url ??
               (section.friend_id
@@ -93,6 +96,7 @@ export default function DiscoverPage() {
       {!isLoading && !isError && filter === "reserved" && (
         <ReservedItemsGrid
           items={reservedSections}
+          showDiscountBadge={isPro}
           onToggleReserve={(itemId) => toggleReservation.mutate(itemId)}
         />
       )}

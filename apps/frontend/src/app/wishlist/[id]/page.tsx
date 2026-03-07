@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { WishlistHeader } from "../components/WishlistHeader";
 import { WishlistItemsGrid } from "../components/WishlistItemsGrid";
 import {
@@ -18,6 +18,8 @@ import { DeleteConfirmModal } from "@/components/ui/DeleteConfirmModal/DeleteCon
 import { Pagination } from "@/components/ui/Pagination/Pagination";
 import { Item } from "@/types/item";
 import styles from "./WishlistPage.module.scss";
+import { useSubscription } from "@/hooks/use-subscription";
+import { useCheckFriendship } from "@/hooks/use-friends";
 
 const PAGE_SIZE = 12;
 
@@ -53,6 +55,13 @@ export default function WishlistItemsPage() {
 
   const items = itemsData ?? [];
   const isOwner = !!currentUserId && wishlist?.user_id === currentUserId;
+
+  const { isPro } = useSubscription();
+  const friendshipCheckUserId =
+    !isOwner && !!currentUserId && !!wishlist?.user_id ? wishlist.user_id : "";
+  const { data: isFriend = false } = useCheckFriendship(friendshipCheckUserId);
+  const showDiscountBadge = !isOwner && isPro && isFriend;
+
   const totalItems = wishlist?.itemsCount ?? items.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
 
@@ -80,6 +89,7 @@ export default function WishlistItemsPage() {
           <WishlistItemsGrid
             items={items}
             isOwner={isOwner}
+            showDiscountBadge={showDiscountBadge}
             onToggleReserve={(itemId) => toggleReservation.mutate(itemId)}
             onDelete={(itemId) => setDeleteItemId(itemId)}
             onEdit={(item) => setEditItem(item)}

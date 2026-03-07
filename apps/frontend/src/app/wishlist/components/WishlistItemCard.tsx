@@ -15,6 +15,7 @@ import { useCurrentUserId } from "@/hooks/use-user";
 type Props = {
   item: Item;
   isOwner?: boolean;
+  showDiscountBadge?: boolean;
   onToggleReserve?: (id: string) => void;
   onDelete?: (id: string) => void;
   onEdit?: (item: Item) => void;
@@ -23,6 +24,7 @@ type Props = {
 export function WishlistItemCard({
   item,
   isOwner = false,
+  showDiscountBadge = false,
   onToggleReserve,
   onDelete,
   onEdit,
@@ -61,6 +63,39 @@ export function WishlistItemCard({
     return price.startsWith("$") ? price : `$${price}`;
   })();
 
+  function parsePriceToNumber(value: string | null | undefined): number | null {
+    if (!value) return null;
+
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+
+    const safe = trimmed.replace(/[^0-9,.-]/g, "");
+    if (!safe) return null;
+
+    const hasComma = safe.includes(",");
+    const hasDot = safe.includes(".");
+
+    // If both exist, treat comma as thousands separator.
+    const normalized = hasComma && hasDot ? safe.replace(/,/g, "") : safe.replace(/,/g, ".");
+    const n = Number.parseFloat(normalized);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  const salePercentOff = (() => {
+    if (!showDiscountBadge) return null;
+    if (!item.has_discount) return null;
+
+    const base = parsePriceToNumber(item.price);
+    const discounted = parsePriceToNumber(item.discount_price);
+    if (!base || !discounted) return null;
+    if (base <= 0) return null;
+
+    const raw = ((base - discounted) / base) * 100;
+    const rounded = Math.round(raw);
+    if (!Number.isFinite(rounded) || rounded <= 0) return null;
+    return Math.min(99, rounded);
+  })();
+
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -93,11 +128,22 @@ export function WishlistItemCard({
             </div>
           )}
 
-          {priority && (
-            <div className={`${styles.badgeRight} ${styles[priority.toLowerCase()]}`}>
-              {priority}
-            </div>
-          )}
+          <div className={styles.badgeStackRight}>
+            {salePercentOff != null && (
+              <div className={`${styles.badgeRight} ${styles.saleBadge}`}>
+                <span className={styles.saleLabel}>Sale</span>
+                <span className={styles.salePercent}>-{salePercentOff}%</span>
+              </div>
+            )}
+
+            {priority && (
+              <div
+                className={`${styles.badgeRight} ${styles[priority.toLowerCase()]}`}
+              >
+                {priority}
+              </div>
+            )}
+          </div>
 
           <div className={styles.quickActions}>
             {item.url && (

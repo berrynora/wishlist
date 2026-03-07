@@ -9,6 +9,7 @@ import { DiscoverSection as Section } from "@/api/types/wishilst";
 type Props = Section & {
   onToggleReserve?: (itemId: string) => void;
   avatarUrl?: string | null;
+  showDiscountBadge?: boolean;
 };
 
 export function DiscoverSection({
@@ -22,6 +23,7 @@ export function DiscoverSection({
   items,
   avatarUrl,
   onToggleReserve,
+  showDiscountBadge = false,
 }: Props) {
   const itemCount = items.length;
   const resolvedAvatarUrl = avatarUrl ?? avatar_url ?? null;
@@ -77,6 +79,7 @@ export function DiscoverSection({
           <DiscoverItemCard
             key={item.id}
             {...item}
+            showDiscountBadge={showDiscountBadge}
             onToggleReserve={onToggleReserve}
           />
         ))}

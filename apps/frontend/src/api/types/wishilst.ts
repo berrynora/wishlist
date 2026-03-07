@@ -42,6 +42,7 @@ export type DiscoverItem = {
   priority?: "Low" | "Medium" | "High" | 1 | 2 | 3;
   isReserved: boolean;
   reservedBy?: string | null;
+  discount_price?: number | null;
 };
 
 export type DiscoverSection = {
@@ -70,8 +71,9 @@ export type ReservedItem = {
   wishlist_title: string;
   owner_id: string;
   owner_name: string;
-  owner_username: string;
+  owner_username: string; 
   owner_avatar: string;
+  discount_price?: number | null;
 };
 
 export interface FriendUpcomingWishlist {

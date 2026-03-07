@@ -56,8 +56,6 @@
 
 .badgeLeft,
 .badgeRight {
-  position: absolute;
-  top: 10px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -70,6 +68,8 @@
 }
 
 .badgeLeft {
+  position: absolute;
+  top: 10px;
   left: 10px;
   background: var(--brand-alpha-15);
   color: $brand;
@@ -80,10 +80,35 @@
 }
 
 .badgeRight {
-  right: 10px;
   background: var(--card-bg);
   border: 1px solid var(--color-border-subtle);
   color: var(--color-text);
+}
+
+.badgeStackRight {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.saleBadge {
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.saleLabel {
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.salePercent {
+  font-variant-numeric: tabular-nums;
 }
 
 .low {

@@ -9,6 +9,7 @@ import { useCurrentUserId } from "@/hooks/use-user";
 
 type Props = ReservedItem & {
   onToggleReserve?: (id: string) => void;
+  showDiscountBadge?: boolean;
 };
 
 export function ReservedItemCard({
@@ -22,7 +23,9 @@ export function ReservedItemCard({
   wishlist_title,
   share_url,
   url,
+  discount_price,
   onToggleReserve,
+  showDiscountBadge = false,
 }: Props) {
   const [detailOpen, setDetailOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -49,6 +52,24 @@ export function ReservedItemCard({
   const priorityClass = priorityDisplay
     ? styles[priorityDisplay.toLowerCase() as "low" | "medium" | "high"]
     : "";
+
+  const salePercentOff = (() => {
+    if (!showDiscountBadge) return null;
+    if (discount_price == null) return null;
+
+    const discounted =
+      typeof discount_price === "number"
+        ? discount_price
+        : Number.parseFloat(String(discount_price).replace(/[^0-9,.-]/g, "").replace(/,/g, "."));
+
+    if (!Number.isFinite(discounted) || discounted <= 0) return null;
+    if (priceNumber <= 0 || discounted >= priceNumber) return null;
+
+    const raw = ((priceNumber - discounted) / priceNumber) * 100;
+    const rounded = Math.round(raw);
+    if (!Number.isFinite(rounded) || rounded <= 0) return null;
+    return Math.min(99, rounded);
+  })();
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -95,6 +116,10 @@ export function ReservedItemCard({
             <Heart size={14} fill="currentColor" />
             <span>Reserved</span>
           </div>
+
+          {salePercentOff != null && (
+            <div className={styles.saleBadgeLeft}>Sale -{salePercentOff}%</div>
+          )}
 
           {priorityDisplay && (
             <div className={`${styles.badgeRight} ${priorityClass}`}>{priorityDisplay}</div>
