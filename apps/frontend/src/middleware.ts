@@ -20,7 +20,11 @@ function copyCookies(from: NextResponse, to: NextResponse) {
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
-  if (pathname.startsWith("/api") || pathname === "/auth/callback") {
+  if (
+    pathname.startsWith("/api") ||
+    pathname === "/auth/callback" ||
+    pathname === "/share"
+  ) {
     return NextResponse.next();
   }
 

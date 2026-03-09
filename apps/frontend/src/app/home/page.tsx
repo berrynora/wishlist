@@ -7,6 +7,7 @@ import { StatsRow } from "./components/StatsRow";
 import { WishlistGrid } from "./components/WishlistGrid";
 import { CreateWishlistModal } from "@/app/wishlist/components/CreateWishlistModal";
 import { FriendInviteModal } from "@/app/friends/components/FriendInviteModal";
+import { FriendRequestSentModal } from "@/app/share/components/FriendRequestSentModal";
 
 function getInitialInvite(searchParams: URLSearchParams) {
   return searchParams.get("friendInvite") ?? "";
@@ -23,12 +24,20 @@ export default function HomePage() {
     () => !!getInitialInvite(searchParams),
   );
 
+  const [friendRequestSent] = useState(
+    () => searchParams.get("friendRequestSent") === "1",
+  );
+  const [friendRequestSentOpen, setFriendRequestSentOpen] = useState(
+    () => searchParams.get("friendRequestSent") === "1",
+  );
+
   useEffect(() => {
-    if (cleaned.current || !inviteUserId) return;
+    if (cleaned.current || (!inviteUserId && !friendRequestSent)) return;
     cleaned.current = true;
 
     const params = new URLSearchParams(searchParams.toString());
     params.delete("friendInvite");
+    params.delete("friendRequestSent");
     const next = params.toString();
     router.replace(next ? `/home?${next}` : "/home", { scroll: false });
   }, [inviteUserId, searchParams, router]);
@@ -44,6 +53,10 @@ export default function HomePage() {
           open={inviteOpen}
           userId={inviteUserId}
           onClose={() => setInviteOpen(false)}
+        />
+        <FriendRequestSentModal
+          open={friendRequestSentOpen}
+          onClose={() => setFriendRequestSentOpen(false)}
         />
       </main>
     </>
