@@ -2,7 +2,7 @@
 
 import styles from "./WishlistHeader.module.scss";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Gift, MoreHorizontal } from "lucide-react";
+import { ArrowLeft, Gift, MoreHorizontal, Share2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Wishlist } from "@/types/wishlist";
 import { accentClass } from "@/lib/helpers/wishlist-helper";
@@ -13,6 +13,7 @@ type Props = {
   onAddItem?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onShare?: () => void;
   isOwner?: boolean;
 };
 
@@ -21,6 +22,7 @@ export function WishlistHeader({
   onAddItem,
   onEdit,
   onDelete,
+  onShare,
   isOwner = false,
 }: Props) {
   const router = useRouter();
@@ -52,39 +54,50 @@ export function WishlistHeader({
           </div>
 
           {isOwner && (
-            <div className={styles.menuWrapper} ref={menuRef}>
-              <button
-                className={styles.menuButton}
-                onClick={() => setMenuOpen((prev) => !prev)}
-                aria-label="Wishlist actions"
-              >
-                <MoreHorizontal size={18} />
-              </button>
-
-              {menuOpen && (
-                <div className={styles.menuDropdown}>
-                  <button
-                    type="button"
-                    className={styles.menuItem}
-                    onClick={() => {
-                      setMenuOpen(false);
-                      onEdit?.();
-                    }}
-                  >
-                    <span>Edit wishlist</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.menuItem} ${styles.dangerItem}`}
-                    onClick={() => {
-                      setMenuOpen(false);
-                      onDelete?.();
-                    }}
-                  >
-                    <span>Delete wishlist</span>
-                  </button>
-                </div>
+            <div className={styles.bannerActions}>
+              {onShare && (
+                <button
+                  className={styles.menuButton}
+                  onClick={onShare}
+                  aria-label="Share wishlist"
+                >
+                  <Share2 size={18} />
+                </button>
               )}
+              <div className={styles.menuWrapper} ref={menuRef}>
+                <button
+                  className={styles.menuButton}
+                  onClick={() => setMenuOpen((prev) => !prev)}
+                  aria-label="Wishlist actions"
+                >
+                  <MoreHorizontal size={18} />
+                </button>
+
+                {menuOpen && (
+                  <div className={styles.menuDropdown}>
+                    <button
+                      type="button"
+                      className={styles.menuItem}
+                      onClick={() => {
+                        setMenuOpen(false);
+                        onEdit?.();
+                      }}
+                    >
+                      <span>Edit wishlist</span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.menuItem} ${styles.dangerItem}`}
+                      onClick={() => {
+                        setMenuOpen(false);
+                        onDelete?.();
+                      }}
+                    >
+                      <span>Delete wishlist</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>

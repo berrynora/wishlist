@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { WishlistHeader } from "../components/WishlistHeader";
 import { WishlistItemsGrid } from "../components/WishlistItemsGrid";
 import {
@@ -20,6 +20,7 @@ import { Item } from "@/types/item";
 import styles from "./WishlistPage.module.scss";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useCheckFriendship } from "@/hooks/use-friends";
+import { createWishlistShareToken } from "@/api/share";
 
 const PAGE_SIZE = 12;
 
@@ -65,6 +66,19 @@ export default function WishlistItemsPage() {
   const totalItems = wishlist?.itemsCount ?? items.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
 
+  const handleShare = useCallback(async () => {
+    try {
+      const shareBaseUrl = `${window.location.origin}/share`;
+      const { shareUrl } = await createWishlistShareToken(id, { shareBaseUrl });
+      if (shareUrl) {
+        await navigator.clipboard.writeText(shareUrl);
+        alert("Share link copied to clipboard!");
+      }
+    } catch {
+      alert("Failed to generate share link.");
+    }
+  }, [id]);
+
   return (
     <main className={styles.page}>
       {wishlistLoading && <p>Loading wishlist...</p>}
@@ -75,6 +89,7 @@ export default function WishlistItemsPage() {
           onAddItem={isOwner ? () => setCreateOpen(true) : undefined}
           onEdit={isOwner ? () => setEditWishlistOpen(true) : undefined}
           onDelete={isOwner ? () => setDeleteWishlistOpen(true) : undefined}
+          onShare={isOwner ? handleShare : undefined}
           isOwner={isOwner}
         />
       )}
