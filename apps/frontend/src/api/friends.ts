@@ -119,16 +119,17 @@ export async function cancelFriendRequest(requestId: string): Promise<void> {
 export async function getFriends({
   skip = 0,
   take = 10,
+  search,
 }: PaginationParams = {}): Promise<FriendWithDetails[]> {
   const session = (await supabaseBrowser.auth.getSession()).data.session;
   const myUserId = session?.user.id;
 
   if (!myUserId) throw new Error('Not authenticated');
 
-  const { data, error } = await supabaseBrowser.rpc('get_friends_with_details', {
-    p_user_id: myUserId,
+  const { data, error } = await supabaseBrowser.rpc('get_friends', {
     p_skip: skip,
     p_take: take,
+    p_search: search?.trim() || null,
   });
 
   if (error) throw error;

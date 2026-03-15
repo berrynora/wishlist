@@ -26,8 +26,16 @@ export function TopNav() {
   const [showResults, setShowResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const isSearchVisible =
-    pathname === "/home" || (pathname?.startsWith("/friends/") ?? false);
+  const searchMode =
+    pathname === "/home"
+      ? "wishlists"
+      : pathname === "/friends"
+        ? "friends"
+        : (pathname?.startsWith("/friends/") ?? false)
+          ? "wishlists"
+          : null;
+  const isSearchVisible = !!searchMode;
+  const canShowWishlistResults = searchMode === "wishlists";
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(query), 300);
@@ -58,7 +66,7 @@ export function TopNav() {
   }, []);
 
   const { data: results = [] } = useSearchWishlists(
-    isSearchVisible ? debouncedQuery : "",
+    canShowWishlistResults ? debouncedQuery : "",
   );
 
   return (
@@ -102,12 +110,16 @@ export function TopNav() {
               <div className={styles.search} ref={searchRef}>
                 <Search size={16} />
                 <input
-                  placeholder="Search wishlists..."
+                  placeholder={
+                    searchMode === "friends"
+                      ? "Search friends..."
+                      : "Search wishlists..."
+                  }
                   value={query}
                   onChange={(e) => {
                     const val = e.target.value;
                     setQuery(val);
-                    setShowResults(true);
+                    if (canShowWishlistResults) setShowResults(true);
                     const params = new URLSearchParams(searchParams.toString());
                     if (val) params.set("search", val);
                     else params.delete("search");
@@ -115,10 +127,12 @@ export function TopNav() {
                       scroll: false,
                     });
                   }}
-                  onFocus={() => query && setShowResults(true)}
+                  onFocus={() =>
+                    canShowWishlistResults && query && setShowResults(true)
+                  }
                 />
 
-                {showResults && debouncedQuery && (
+                {canShowWishlistResults && showResults && debouncedQuery && (
                   <div className={styles.searchDropdown}>
                     {results.length === 0 ? (
                       <div className={styles.searchEmpty}>No wishlists found</div>
