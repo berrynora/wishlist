@@ -40,8 +40,11 @@ export type DiscoverItem = {
   share_url?: string | null;
   description?: string | null;
   priority?: "Low" | "Medium" | "High" | 1 | 2 | 3;
+  status?: number;
   isReserved: boolean;
+  reserved_by?: string | null;
   reservedBy?: string | null;
+  reservedByName?: string | null;
   discount_price?: number | null;
 };
 

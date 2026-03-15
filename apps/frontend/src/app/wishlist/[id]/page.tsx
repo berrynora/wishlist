@@ -7,6 +7,7 @@ import { WishlistItemsGrid } from "../components/WishlistItemsGrid";
 import {
   useWishlistItems,
   useToggleItemReservation,
+  useToggleItemBought,
   useDeleteItem,
 } from "@/hooks/use-items";
 import { useWishlistById, useDeleteWishlist } from "@/hooks/use-wishlists";
@@ -51,6 +52,7 @@ export default function WishlistItemsPage() {
   } = useWishlistItems(id, { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE });
 
   const toggleReservation = useToggleItemReservation();
+  const toggleBought = useToggleItemBought();
   const deleteItemMutation = useDeleteItem();
   const deleteWishlistMutation = useDeleteWishlist();
 
@@ -106,6 +108,7 @@ export default function WishlistItemsPage() {
             isOwner={isOwner}
             showDiscountBadge={showDiscountBadge}
             onToggleReserve={(itemId) => toggleReservation.mutate(itemId)}
+            onToggleBought={(itemId) => toggleBought.mutate(itemId)}
             onDelete={(itemId) => setDeleteItemId(itemId)}
             onEdit={(item) => setEditItem(item)}
           />
