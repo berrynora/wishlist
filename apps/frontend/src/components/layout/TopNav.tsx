@@ -9,7 +9,6 @@ import { Gift, Users, Heart, Search } from "lucide-react";
 import { ProfileMenu } from "../profile/ProfileMenu";
 import { NotificationsMenu } from "../notifications/NotificationsMenu";
 import { ThemeToggle } from "./ThemeToggle";
-import { useSearchWishlists } from "@/hooks/use-wishlists";
 
 const navItems = [
   { label: "My Wishlists", href: "/home", icon: <Gift size={16} /> },
@@ -22,52 +21,55 @@ export function TopNav() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [showResults, setShowResults] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
+  const previousSearchModeRef = useRef<"home" | "friends" | "discover" | null>(null);
+  const discoverTab = searchParams.get("tab");
 
   const searchMode =
     pathname === "/home"
-      ? "wishlists"
+      ? "home"
+      : pathname === "/discover"
+        ? "discover"
       : pathname === "/friends"
         ? "friends"
-        : (pathname?.startsWith("/friends/") ?? false)
-          ? "wishlists"
-          : null;
-  const isSearchVisible = !!searchMode;
-  const canShowWishlistResults = searchMode === "wishlists";
+        : null;
+  const isSearchVisible = searchMode !== null;
+  const activeSearchKey =
+    searchMode === "discover"
+      ? discoverTab === "reserved"
+        ? "reservedSearch"
+        : discoverTab === "purchased"
+          ? "purchasedSearch"
+          : "discoverSearch"
+      : "search";
+
+  function clearSearchParams(params: URLSearchParams) {
+    params.delete("search");
+    params.delete("discoverSearch");
+    params.delete("reservedSearch");
+    params.delete("purchasedSearch");
+  }
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(query), 300);
-    return () => clearTimeout(timer);
-  }, [query]);
+    const previousMode = previousSearchModeRef.current;
+    if (previousMode && previousMode !== searchMode) {
+      const params = new URLSearchParams(searchParams.toString());
+      clearSearchParams(params);
+      router.replace(params.toString() ? `${pathname}?${params.toString()}` : pathname, {
+        scroll: false,
+      });
+      setQuery("");
+    }
+    previousSearchModeRef.current = searchMode;
+  }, [searchMode, pathname, searchParams, router]);
 
   useEffect(() => {
     if (!isSearchVisible) {
       setQuery("");
-      setDebouncedQuery("");
-      setShowResults(false);
-    } else {
-      const initial = searchParams.get("search") ?? "";
-      setQuery(initial);
-      setDebouncedQuery(initial);
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSearchVisible]);
 
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowResults(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
-  const { data: results = [] } = useSearchWishlists(
-    canShowWishlistResults ? debouncedQuery : "",
-  );
+    setQuery(searchParams.get(activeSearchKey) ?? "");
+  }, [isSearchVisible, searchParams, activeSearchKey]);
 
   return (
     <header className={styles.header}>
@@ -107,53 +109,31 @@ export function TopNav() {
         <div className={styles.right}>
           <div className={styles.searchSlot}>
             {isSearchVisible ? (
-              <div className={styles.search} ref={searchRef}>
+              <div className={styles.search}>
                 <Search size={16} />
                 <input
                   placeholder={
                     searchMode === "friends"
                       ? "Search friends..."
-                      : "Search wishlists..."
+                      : searchMode === "discover"
+                        ? "Search discover..."
+                        : "Search wishlists..."
                   }
                   value={query}
                   onChange={(e) => {
                     const val = e.target.value;
                     setQuery(val);
-                    if (canShowWishlistResults) setShowResults(true);
-                    const params = new URLSearchParams(searchParams.toString());
-                    if (val) params.set("search", val);
-                    else params.delete("search");
-                    router.replace(`${pathname}?${params.toString()}`, {
-                      scroll: false,
-                    });
-                  }}
-                  onFocus={() =>
-                    canShowWishlistResults && query && setShowResults(true)
-                  }
-                />
 
-                {canShowWishlistResults && showResults && debouncedQuery && (
-                  <div className={styles.searchDropdown}>
-                    {results.length === 0 ? (
-                      <div className={styles.searchEmpty}>No wishlists found</div>
-                    ) : (
-                      results.map((w) => (
-                        <div
-                          key={w.id}
-                          className={styles.searchItem}
-                          onClick={() => {
-                            router.push(`/wishlist/${w.id}`);
-                            setQuery("");
-                            setShowResults(false);
-                          }}
-                        >
-                          <strong>{w.title}</strong>
-                          <span>{w.itemsCount ?? 0} items</span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
+                    const params = new URLSearchParams(searchParams.toString());
+                    if (val) params.set(activeSearchKey, val);
+                    else params.delete(activeSearchKey);
+
+                    router.replace(
+                      params.toString() ? `${pathname}?${params.toString()}` : pathname,
+                      { scroll: false },
+                    );
+                  }}
+                />
               </div>
             ) : (
               <div className={styles.searchPlaceholder} aria-hidden="true" />

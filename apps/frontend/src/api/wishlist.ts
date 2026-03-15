@@ -41,13 +41,14 @@ export async function getPublicWishlists(
 export async function getFriendsWishlistsDiscover(
   params: PaginationParams = {},
 ): Promise<DiscoverSection[]> {
-  const { skip = 0, take = 10 } = params;
+  const { skip = 0, take = 10, search } = params;
 
   const { data, error } = await supabaseBrowser.rpc(
     "get_friends_wishlists_discover",
     {
       p_skip: skip,
       p_take: take,
+      p_search: search?.trim() || null,
     },
   );
 
@@ -62,13 +63,14 @@ export async function getFriendsWishlistsDiscover(
 export async function getFriendsWishlistsReservedByMe(
   params: PaginationParams = {},
 ): Promise<ReservedItem[]> {
-  const { skip = 0, take = 10 } = params;
+  const { skip = 0, take = 10, search } = params;
 
   const { data, error } = await supabaseBrowser.rpc(
     "get_reserved_items_by_me",
     {
       p_skip: skip,
       p_take: take,
+      p_search: search?.trim() || null,
     },
   );
 
@@ -79,6 +81,7 @@ export async function getFriendsWishlistsReservedByMe(
 
   return data || [];
 }
+
 export async function createWishlist({
   title,
   description,
@@ -247,6 +250,28 @@ export async function getFriendsUpcomingWishlists(): Promise<
   );
 
   if (error) throw error;
+
+  return data || [];
+}
+
+export async function getFriendsWishlistsPurchasedByMe(
+  params: PaginationParams = {},
+): Promise<ReservedItem[]> {
+  const { skip = 0, take = 10, search } = params;
+
+  const { data, error } = await supabaseBrowser.rpc(
+    "get_my_bought_items",
+    {
+      p_skip: skip,
+      p_take: take,
+      p_search: search?.trim() || null,
+    },
+  );
+
+  if (error) {
+    console.error("Error fetching my bought items:", error);
+    throw error;
+  }
 
   return data || [];
 }
