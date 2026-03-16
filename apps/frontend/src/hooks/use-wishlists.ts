@@ -11,6 +11,7 @@ import {
   searchWishlists,
   getFriendWishlists,
   getFriendsWishlistsReservedByMe,
+  grantWishlistAccess,
 } from "@/api/wishlist";
 import type {
   CreateWishlistParams,
@@ -129,3 +130,23 @@ export function useFriendWishlists(userId: string, params?: PaginationParams) {
     enabled: !!userId,
   });
 }
+
+export function useGrantWishlistAccess() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      wishlistId,
+      grantedToUserId,
+      accessType,
+    }: {
+      wishlistId: string;
+      grantedToUserId: string;
+      accessType: 0 | 1;
+    }) => grantWishlistAccess(wishlistId, grantedToUserId, accessType),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
+    },
+  });
+}
+

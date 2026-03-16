@@ -19,7 +19,6 @@ export async function getWishlists(
     .order("created_at", { ascending: false })
     .range(skip, skip + take - 1);
 
-  // Додаємо пошук за тайтлом
   if (search && search.trim() !== "") {
     query = query.ilike("title", `%${search}%`);
   }

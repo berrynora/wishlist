@@ -2,7 +2,13 @@
 
 import styles from "./WishlistHeader.module.scss";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Gift, MoreHorizontal, Share2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Gift,
+  KeyRound,
+  MoreHorizontal,
+  Share2,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Wishlist } from "@/types/wishlist";
 import { accentClass } from "@/lib/helpers/wishlist-helper";
@@ -14,6 +20,7 @@ type Props = {
   onEdit?: () => void;
   onDelete?: () => void;
   onShare?: () => void;
+  onManageAccess?: () => void;
   isOwner?: boolean;
 };
 
@@ -23,6 +30,7 @@ export function WishlistHeader({
   onEdit,
   onDelete,
   onShare,
+  onManageAccess,
   isOwner = false,
 }: Props) {
   const router = useRouter();
@@ -62,6 +70,15 @@ export function WishlistHeader({
                   aria-label="Share wishlist"
                 >
                   <Share2 size={18} />
+                </button>
+              )}
+              {onManageAccess && (
+                <button
+                  className={styles.menuButton}
+                  onClick={onManageAccess}
+                  aria-label="Manage wishlist access"
+                >
+                  <KeyRound size={18} />
                 </button>
               )}
               <div className={styles.menuWrapper} ref={menuRef}>

@@ -9,17 +9,26 @@ import {
   ReservedItem,
 } from "./types/wishilst";
 
-export async function getMyWishlists(
-  params: PaginationParams = {},
-): Promise<Wishlist[]> {
-  const {
-    data: { session },
-  } = await supabaseBrowser.auth.getSession();
+export async function getMyWishlists({
+  skip = 0,
+  take = 10,
+  search,
+}: PaginationParams = {}): Promise<Wishlist[]> {
+  const { data, error } = await supabaseBrowser.rpc("get_my_wishlists_feed", {
+    p_skip: skip,
+    p_take: take,
+    p_search: search?.trim() ? search.trim() : null,
+  });
 
-  return getWishlists(
-    (query) => query.eq("user_id", session?.user?.id),
-    params,
-  );
+  if (error) throw error;
+
+  return (data ?? []).map((row: any) => ({
+    ...row,
+    itemsCount: row.items_count,
+    ownerNickname: row.owner_nickname,
+    canEdit: row.can_edit,
+    isOwner: row.is_owner,
+  }));
 }
 
 export async function getPublicWishlists(
@@ -249,4 +258,19 @@ export async function getFriendsUpcomingWishlists(): Promise<
   if (error) throw error;
 
   return data || [];
+}
+
+export async function grantWishlistAccess(
+  wishlistId: string,
+  grantedToUserId: string,
+  accessType: 0 | 1,
+) {
+  const { data, error } = await supabaseBrowser.rpc("grant_wishlist_access", {
+    p_wishlist_id: wishlistId,
+    p_granted_to_user_id: grantedToUserId,
+    p_access_type: accessType,
+  });
+
+  if (error) throw error;
+  return data;
 }
