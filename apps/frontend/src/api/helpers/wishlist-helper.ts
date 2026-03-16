@@ -3,7 +3,7 @@ import { Wishlist } from "@/types/wishlist";
 
 export async function getWishlists(
   filter: (query: any) => any,
-  { skip = 0, take = 10, search }: PaginationParams = {}
+  { skip = 0, take = 10, search }: PaginationParams = {},
 ): Promise<Wishlist[]> {
   const {
     data: { session },
@@ -29,8 +29,18 @@ export async function getWishlists(
 
   if (error) throw error;
 
-  return (data ?? []).map(({ item, ...wishlist }: any) => ({
-    ...wishlist,
-    itemsCount: item?.[0]?.count || 0,
-  }));
+  return (data ?? []).map(({ item, ...wishlist }: any) => {
+    const itemsCount = item?.[0]?.count || 0;
+    const isOwner = wishlist.user_id === session.user.id;
+
+    return {
+      ...wishlist,
+      items_count: itemsCount,
+      itemsCount,
+      can_edit: isOwner,
+      is_owner: isOwner,
+      access_type: null,
+      owner_nickname: wishlist.owner_nickname ?? null,
+    };
+  });
 }

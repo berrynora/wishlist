@@ -12,7 +12,8 @@ import {
   getFriendWishlists,
   getFriendsWishlistsReservedByMe,
   grantWishlistAccess,
-  getFriendsWishlistsPurchasedByMe
+  getFriendsWishlistsPurchasedByMe,
+  revokeWishlistAccess,
 } from "@/api/wishlist";
 import type {
   CreateWishlistParams,
@@ -168,7 +169,38 @@ export function useGrantWishlistAccess() {
     }) => grantWishlistAccess(wishlistId, grantedToUserId, accessType),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: ["friends-without-wishlist-access"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["wishlist-access-list"],
+      });
     },
   });
 }
 
+export function useRevokeWishlistAccess() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      wishlistId,
+      targetUserId,
+    }: {
+      wishlistId: string;
+      targetUserId: string;
+    }) => revokeWishlistAccess(wishlistId, targetUserId),
+
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["wishlist-access-list", variables.wishlistId],
+        exact: false,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["friends-without-wishlist-access", variables.wishlistId],
+        exact: false,
+      });
+    },
+  });
+}

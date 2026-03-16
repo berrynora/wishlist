@@ -94,7 +94,7 @@ export default function WishlistItemsPage() {
           onAddItem={canEditWishlist ? () => setCreateOpen(true) : undefined}
           onEdit={canEditWishlist ? () => setEditWishlistOpen(true) : undefined}
           onDelete={isOwner ? () => setDeleteWishlistOpen(true) : undefined}
-          onShare={isOwner ? handleShare : undefined}
+          onShare={handleShare}
           onManageAccess={isOwner ? () => setGrantAccessOpen(true) : undefined}
           isOwner={isOwner}
         />

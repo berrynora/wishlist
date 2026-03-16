@@ -28,7 +28,7 @@ export function WishlistGrid() {
 
   return (
     <div>
-      <h2 className={styles.title}>My Wishlists</h2>
+      <h2 className={styles.title}>Wishlists</h2>
       <div className={styles.grid}>
         {isLoading && <p>Loading...</p>}
         {isError && <p>Failed to load wishlists.</p>}

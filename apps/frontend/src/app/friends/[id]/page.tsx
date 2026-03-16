@@ -63,7 +63,7 @@ export default function FriendWishlistsPage() {
 
       <div className={styles.grid}>
         {wishlists.map((w) => (
-          <WishlistCard key={w.id} wishlist={w} />
+          <WishlistCard key={w.id} wishlist={w} showSharedMeta={false} />
         ))}
       </div>
     </main>

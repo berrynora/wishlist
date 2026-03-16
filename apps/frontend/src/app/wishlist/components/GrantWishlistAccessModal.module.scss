@@ -2,18 +2,19 @@
 
 .container {
   display: grid;
-  gap: 22px;
-  padding: 12px 10px 4px;
+  gap: 20px;
+  padding: 8px 10px 4px;
 }
 
 .header {
   display: grid;
-  gap: 8px;
+  justify-items: start;
+  gap: 6px;
 
   h2 {
     margin: 0;
-    font-size: 25px;
-    line-height: 1.1;
+    font-size: 24px;
+    line-height: 1.15;
     letter-spacing: -0.03em;
   }
 
@@ -25,34 +26,66 @@
   }
 }
 
-.heroIcon {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  color: white;
-  background: linear-gradient(135deg, #fb7185, #f97316);
-  box-shadow: 0 10px 24px rgba(249, 115, 22, 0.28);
-}
-
 .eyebrow {
   margin: 0;
-  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--badge-visibility-bg);
+  color: $brand;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--color-text-light);
 }
 
 .inlineTitle {
   color: var(--color-text);
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.description {
+  max-width: 44ch;
+}
+
+.titleCard {
+  width: 100%;
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, var(--color-bg-subtle), transparent);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.titleLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-light);
 }
 
 .section {
   display: grid;
-  gap: 10px;
+  gap: 9px;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sectionMeta {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
 }
 
 .label {
@@ -200,38 +233,116 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 14px;
-  border-radius: 18px;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 16px;
   border: 1px solid var(--color-border-light);
   background: linear-gradient(180deg, var(--color-bg-subtle), transparent);
+}
+
+.accessListCard {
+  border: 1px solid var(--color-border-light);
+  border-radius: 18px;
+  background: linear-gradient(180deg, var(--color-bg-subtle), transparent);
+  overflow: hidden;
+}
+
+.accessList {
+  display: grid;
+}
+
+.accessUserRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border-subtle);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.accessUserActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--badge-visibility-bg);
+  color: $brand;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.revokeButton {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 999px;
+  background: var(--card-bg);
+  color: var(--color-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-danger);
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 }
 
 .selectedIdentity {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 
   p {
     margin: 0;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--color-text);
+    line-height: 1.2;
   }
 
   span {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--color-text-muted);
+    line-height: 1.2;
   }
 }
 
 .clearButton {
+  padding: 0;
   border: none;
   background: transparent;
   color: $brand;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .accessGrid {
@@ -329,7 +440,7 @@
 
 @media (max-width: 640px) {
   .container {
-    gap: 18px;
+    gap: 16px;
     padding: 8px 4px 0;
   }
 
@@ -344,5 +455,15 @@
   .selectedCard {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .accessUserRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .accessUserActions {
+    width: 100%;
+    justify-content: space-between;
   }
 }

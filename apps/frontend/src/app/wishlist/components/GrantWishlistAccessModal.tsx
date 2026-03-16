@@ -4,17 +4,23 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Check,
   ChevronDown,
-  KeyRound,
   Loader2,
   Search,
   Shield,
   SquarePen,
+  X,
 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
-import { useFriends } from "@/hooks/use-friends";
-import { useGrantWishlistAccess } from "@/hooks/use-wishlists";
-import type { FriendWithDetails } from "@/api/types/friends";
+import {
+  useFriendsWithoutWishlistAccess,
+  useWishlistAccessList,
+} from "@/hooks/use-friends";
+import {
+  useGrantWishlistAccess,
+  useRevokeWishlistAccess,
+} from "@/hooks/use-wishlists";
+import type { ProfileSearchResult } from "@/api/types/friends";
 import styles from "./GrantWishlistAccessModal.module.scss";
 
 type AccessType = 0 | 1;
@@ -48,10 +54,6 @@ const ACCESS_OPTIONS: Array<{
 
 const FRIEND_PAGE_SIZE = 100;
 
-function friendSearchText(friend: FriendWithDetails) {
-  return `${friend.display_name} ${friend.nickname ?? ""}`.trim().toLowerCase();
-}
-
 export function GrantWishlistAccessModal({
   open,
   onClose,
@@ -60,7 +62,7 @@ export function GrantWishlistAccessModal({
 }: Props) {
   const [query, setQuery] = useState("");
   const [selectedFriend, setSelectedFriend] =
-    useState<FriendWithDetails | null>(null);
+    useState<ProfileSearchResult | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [accessType, setAccessType] = useState<AccessType>(1);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -69,11 +71,19 @@ export function GrantWishlistAccessModal({
     data: friends = [],
     isLoading: friendsLoading,
     isError: friendsError,
-  } = useFriends({
+  } = useFriendsWithoutWishlistAccess({
+    wishlistId,
+    search: query,
     skip: 0,
     take: FRIEND_PAGE_SIZE,
   });
+  const {
+    data: accessList = [],
+    isLoading: accessListLoading,
+    isError: accessListError,
+  } = useWishlistAccessList(wishlistId);
   const grantAccess = useGrantWishlistAccess();
+  const revokeAccess = useRevokeWishlistAccess();
 
   useEffect(() => {
     if (!open) {
@@ -83,18 +93,11 @@ export function GrantWishlistAccessModal({
       setAccessType(1);
       setErrorMessage(null);
       grantAccess.reset();
+      revokeAccess.reset();
     }
-  }, [grantAccess, open]);
+  }, [open]);
 
-  const filteredFriends = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-
-    if (!normalizedQuery) return friends;
-
-    return friends.filter((friend) =>
-      friendSearchText(friend).includes(normalizedQuery),
-    );
-  }, [friends, query]);
+  const filteredFriends = useMemo(() => friends, [friends]);
 
   const canSubmit = Boolean(selectedFriend) && !grantAccess.isPending;
   const showDropdown =
@@ -110,7 +113,7 @@ export function GrantWishlistAccessModal({
     try {
       await grantAccess.mutateAsync({
         wishlistId,
-        grantedToUserId: selectedFriend.friend_id,
+        grantedToUserId: selectedFriend.id,
         accessType,
       });
       onClose();
@@ -121,19 +124,40 @@ export function GrantWishlistAccessModal({
     }
   }
 
+  async function handleRevokeAccess(targetUserId: string) {
+    if (!targetUserId) {
+      setErrorMessage("Missing target user id for revoke access.");
+      return;
+    }
+
+    setErrorMessage(null);
+
+    try {
+      await revokeAccess.mutateAsync({
+        wishlistId,
+        targetUserId,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to revoke access.";
+      setErrorMessage(message);
+    }
+  }
+
   return (
     <Modal open={open} onClose={onClose}>
       <div className={styles.container}>
         <div className={styles.header}>
-          <div className={styles.heroIcon}>
-            <KeyRound size={18} />
-          </div>
           <p className={styles.eyebrow}>Access control</p>
           <h2>Grant wishlist access</h2>
-          <p>
-            Choose a friend and decide whether they can only view or also edit
-            <span className={styles.inlineTitle}> {wishlistTitle}</span>.
+          <p className={styles.description}>
+            Choose a friend and decide whether they can only view this wishlist
+            or also edit it.
           </p>
+          <div className={styles.titleCard}>
+            <span className={styles.titleLabel}>Wishlist</span>
+            <strong className={styles.inlineTitle}>{wishlistTitle}</strong>
+          </div>
         </div>
 
         <div className={styles.section}>
@@ -197,29 +221,22 @@ export function GrantWishlistAccessModal({
                           className={styles.resultItem}
                           onClick={() => {
                             setSelectedFriend(friend);
-                            setQuery(friend.nickname ?? friend.display_name);
+                            setQuery(friend.nickname);
                             setDropdownOpen(false);
                             setErrorMessage(null);
                           }}
                         >
                           <div className={styles.avatarStub}>
-                            {(
-                              friend.nickname?.[0] ??
-                              friend.display_name?.[0] ??
-                              "?"
-                            ).toUpperCase()}
+                            {(friend.nickname?.[0] ?? "?").toUpperCase()}
                           </div>
                           <div className={styles.resultMeta}>
                             <span className={styles.resultName}>
-                              {friend.display_name}
-                            </span>
-                            <span className={styles.resultNickname}>
                               @{friend.nickname}
                             </span>
+                            <span className={styles.resultNickname}>
+                              Available for access
+                            </span>
                           </div>
-                          {selectedFriend?.friend_id === friend.friend_id && (
-                            <Check size={16} className={styles.resultCheck} />
-                          )}
                         </button>
                       ))}
                     </div>
@@ -232,15 +249,11 @@ export function GrantWishlistAccessModal({
             <div className={styles.selectedCard}>
               <div className={styles.selectedIdentity}>
                 <div className={styles.avatarStub}>
-                  {(
-                    selectedFriend.nickname?.[0] ??
-                    selectedFriend.display_name?.[0] ??
-                    "?"
-                  ).toUpperCase()}
+                  {(selectedFriend.nickname?.[0] ?? "?").toUpperCase()}
                 </div>
                 <div>
-                  <p>{selectedFriend.display_name}</p>
-                  <span>@{selectedFriend.nickname}</span>
+                  <p>@{selectedFriend.nickname}</p>
+                  <span>Friend without access yet</span>
                 </div>
               </div>
               <button
@@ -256,6 +269,87 @@ export function GrantWishlistAccessModal({
               </button>
             </div>
           )}
+        </div>
+
+        <div className={styles.section}>
+          <div className={styles.sectionHeading}>
+            <label className={styles.label}>People with access</label>
+            {!accessListLoading && accessList.length > 0 && (
+              <span className={styles.sectionMeta}>
+                {accessList.length} total
+              </span>
+            )}
+          </div>
+
+          <div className={styles.accessListCard}>
+            {accessListLoading && (
+              <div className={styles.emptyState}>
+                <Loader2 size={16} className={styles.spinner} />
+                <span>Loading access list...</span>
+              </div>
+            )}
+
+            {!accessListLoading && accessListError && (
+              <div className={styles.emptyState}>
+                Could not load wishlist access right now.
+              </div>
+            )}
+
+            {!accessListLoading &&
+              !accessListError &&
+              accessList.length === 0 && (
+                <div className={styles.emptyState}>No one has access yet.</div>
+              )}
+
+            {!accessListLoading &&
+              !accessListError &&
+              accessList.length > 0 && (
+                <div className={styles.accessList}>
+                  {accessList.map((user, index) => {
+                    const targetUserId = user.id;
+                    const rowKey = `${wishlistId}-${targetUserId || user.nickname}-${user.access_role}-${index}`;
+
+                    return (
+                      <div key={rowKey} className={styles.accessUserRow}>
+                        <div className={styles.selectedIdentity}>
+                          <div className={styles.avatarStub}>
+                            {(user.nickname?.[0] ?? "?").toUpperCase()}
+                          </div>
+                          <div>
+                            <p>@{user.nickname}</p>
+                            <span>Already has wishlist access</span>
+                          </div>
+                        </div>
+                        <div className={styles.accessUserActions}>
+                          <span className={styles.roleBadge}>
+                            {user.access_role}
+                          </span>
+                          <button
+                            type="button"
+                            className={styles.revokeButton}
+                            onClick={() => handleRevokeAccess(targetUserId)}
+                            disabled={
+                              revokeAccess.isPending &&
+                              revokeAccess.variables?.targetUserId ===
+                                targetUserId
+                            }
+                            aria-label={`Revoke access for @${user.nickname}`}
+                          >
+                            {revokeAccess.isPending &&
+                            revokeAccess.variables?.targetUserId ===
+                              targetUserId ? (
+                              <Loader2 size={14} className={styles.spinner} />
+                            ) : (
+                              <X size={14} />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+          </div>
         </div>
 
         <div className={styles.section}>
