@@ -11,7 +11,9 @@ import {
   searchWishlists,
   getFriendWishlists,
   getFriendsWishlistsReservedByMe,
+  grantWishlistAccess,
   getFriendsWishlistsPurchasedByMe,
+  revokeWishlistAccess,
 } from "@/api/wishlist";
 import type {
   CreateWishlistParams,
@@ -149,5 +151,56 @@ export function useFriendWishlists(userId: string, params?: PaginationParams) {
     queryKey: wishlistKeys.friend(userId, params),
     queryFn: () => getFriendWishlists(userId, params),
     enabled: !!userId,
+  });
+}
+
+export function useGrantWishlistAccess() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      wishlistId,
+      grantedToUserId,
+      accessType,
+    }: {
+      wishlistId: string;
+      grantedToUserId: string;
+      accessType: 0 | 1;
+    }) => grantWishlistAccess(wishlistId, grantedToUserId, accessType),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: ["friends-without-wishlist-access"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["wishlist-access-list"],
+      });
+    },
+  });
+}
+
+export function useRevokeWishlistAccess() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      wishlistId,
+      targetUserId,
+    }: {
+      wishlistId: string;
+      targetUserId: string;
+    }) => revokeWishlistAccess(wishlistId, targetUserId),
+
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["wishlist-access-list", variables.wishlistId],
+        exact: false,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["friends-without-wishlist-access", variables.wishlistId],
+        exact: false,
+      });
+    },
   });
 }

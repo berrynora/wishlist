@@ -15,6 +15,7 @@ import { useCurrentUserId } from "@/hooks/use-user";
 import { CreateItemModal } from "../components/CreateItemModal";
 import { EditItemModal } from "../components/EditItemModal";
 import { EditWishlistModal } from "../components/EditWishlistModal";
+import { GrantWishlistAccessModal } from "../components/GrantWishlistAccessModal";
 import { DeleteConfirmModal } from "@/components/ui/DeleteConfirmModal/DeleteConfirmModal";
 import { Pagination } from "@/components/ui/Pagination/Pagination";
 import { Item } from "@/types/item";
@@ -38,6 +39,7 @@ export default function WishlistItemsPage() {
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
   const [editWishlistOpen, setEditWishlistOpen] = useState(false);
   const [deleteWishlistOpen, setDeleteWishlistOpen] = useState(false);
+  const [grantAccessOpen, setGrantAccessOpen] = useState(false);
 
   const {
     data: wishlist,
@@ -57,7 +59,8 @@ export default function WishlistItemsPage() {
   const deleteWishlistMutation = useDeleteWishlist();
 
   const items = itemsData ?? [];
-  const isOwner = !!currentUserId && wishlist?.user_id === currentUserId;
+  const isOwner = Boolean(wishlist?.is_owner);
+  const canEditWishlist = Boolean(wishlist?.can_edit || wishlist?.is_owner);
 
   const { isPro } = useSubscription();
   const friendshipCheckUserId =
@@ -65,7 +68,7 @@ export default function WishlistItemsPage() {
   const { data: isFriend = false } = useCheckFriendship(friendshipCheckUserId);
   const showDiscountBadge = !isOwner && isPro && isFriend;
 
-  const totalItems = wishlist?.itemsCount ?? items.length;
+  const totalItems = wishlist?.items_count ?? items.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
 
   const handleShare = useCallback(async () => {
@@ -88,10 +91,11 @@ export default function WishlistItemsPage() {
       {wishlist && (
         <WishlistHeader
           wishlist={wishlist}
-          onAddItem={isOwner ? () => setCreateOpen(true) : undefined}
-          onEdit={isOwner ? () => setEditWishlistOpen(true) : undefined}
+          onAddItem={canEditWishlist ? () => setCreateOpen(true) : undefined}
+          onEdit={canEditWishlist ? () => setEditWishlistOpen(true) : undefined}
           onDelete={isOwner ? () => setDeleteWishlistOpen(true) : undefined}
-          onShare={isOwner ? handleShare : undefined}
+          onShare={handleShare}
+          onManageAccess={isOwner ? () => setGrantAccessOpen(true) : undefined}
           isOwner={isOwner}
         />
       )}
@@ -105,7 +109,7 @@ export default function WishlistItemsPage() {
         <>
           <WishlistItemsGrid
             items={items}
-            isOwner={isOwner}
+            isOwner={canEditWishlist}
             showDiscountBadge={showDiscountBadge}
             onToggleReserve={(itemId) => toggleReservation.mutate(itemId)}
             onToggleBought={(itemId) => toggleBought.mutate(itemId)}
@@ -156,6 +160,15 @@ export default function WishlistItemsPage() {
           open={editWishlistOpen}
           onClose={() => setEditWishlistOpen(false)}
           wishlist={wishlist}
+        />
+      )}
+
+      {wishlist && (
+        <GrantWishlistAccessModal
+          open={grantAccessOpen}
+          onClose={() => setGrantAccessOpen(false)}
+          wishlistId={wishlist.id}
+          wishlistTitle={wishlist.title}
         />
       )}
 
