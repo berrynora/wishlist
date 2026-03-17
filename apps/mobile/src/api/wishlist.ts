@@ -1,84 +1,73 @@
-import { supabaseBrowser } from "@/lib/supabase-browser";
-import { Wishlist, WishlistAccent, WishlistVisibility } from "@/types/wishlist";
-import { getWishlists } from "@/api/helpers/wishlist-helper";
-import {
+import { supabase } from "@/lib/supabase";
+import type { Wishlist } from "@/types/wishlist";
+import { WishlistAccent, WishlistVisibility } from "@/types/wishlist";
+import type { PaginationParams } from "@/types";
+import { getWishlists } from "./helpers/wishlist-helper";
+import type {
   CreateWishlistParams,
   UpdateWishlistParams,
   DiscoverSection,
   FriendUpcomingWishlist,
   ReservedItem,
-} from "./types/wishilst";
+} from "./types/wishlist";
 
 export async function getMyWishlists(
-  params: PaginationParams = {},
+  params: PaginationParams = {}
 ): Promise<Wishlist[]> {
   const {
     data: { session },
-  } = await supabaseBrowser.auth.getSession();
+  } = await supabase.auth.getSession();
 
   return getWishlists(
     (query) => query.eq("user_id", session?.user?.id),
-    params,
+    params
   );
 }
 
 export async function getPublicWishlists(
-  params: PaginationParams = {},
+  params: PaginationParams = {}
 ): Promise<Wishlist[]> {
   const {
     data: { session },
-  } = await supabaseBrowser.auth.getSession();
+  } = await supabase.auth.getSession();
 
   return getWishlists(
     (query) =>
       query
         .neq("user_id", session?.user?.id)
         .eq("visibility_type", WishlistVisibility.Public),
-    params,
+    params
   );
 }
 
 export async function getFriendsWishlistsDiscover(
-  params: PaginationParams = {},
+  params: PaginationParams = {}
 ): Promise<DiscoverSection[]> {
   const { skip = 0, take = 10 } = params;
 
-  const { data, error } = await supabaseBrowser.rpc(
+  const { data, error } = await supabase.rpc(
     "get_friends_wishlists_discover",
-    {
-      p_skip: skip,
-      p_take: take,
-    },
+    { p_skip: skip, p_take: take }
   );
 
-  if (error) {
-    console.error("Error fetching friends wishlists:", error);
-    throw error;
-  }
-
+  if (error) throw error;
   return data || [];
 }
 
 export async function getFriendsWishlistsReservedByMe(
-  params: PaginationParams = {},
+  params: PaginationParams = {}
 ): Promise<ReservedItem[]> {
   const { skip = 0, take = 10 } = params;
 
-  const { data, error } = await supabaseBrowser.rpc(
-    "get_reserved_items_by_me",
-    {
-      p_skip: skip,
-      p_take: take,
-    },
-  );
+  const { data, error } = await supabase.rpc("get_reserved_items_by_me", {
+    p_skip: skip,
+    p_take: take,
+  });
 
-  if (error) {
-    console.error("Error fetching reserved wishlists by me:", error);
-    throw error;
-  }
-
+  if (error) throw error;
   return data || [];
 }
+
 export async function createWishlist({
   title,
   description,
@@ -90,12 +79,12 @@ export async function createWishlist({
   const {
     data: { session },
     error: sessionError,
-  } = await supabaseBrowser.auth.getSession();
+  } = await supabase.auth.getSession();
 
   if (sessionError) throw sessionError;
   if (!session?.user) throw new Error("Not authenticated");
 
-  const { data, error } = await supabaseBrowser
+  const { data, error } = await supabase
     .from("wishlist")
     .insert({
       user_id: session.user.id,
@@ -103,7 +92,7 @@ export async function createWishlist({
       description,
       visibility_type: visibility,
       image_url: imageUrl,
-      event_date: event_date ? event_date.toISOString() : null,
+      event_date,
       accent_type: accent,
     })
     .select()
@@ -115,22 +104,19 @@ export async function createWishlist({
     visibility === WishlistVisibility.Public ||
     visibility === WishlistVisibility.FriendsOnly
   ) {
-    // Викликаємо SQL функцію для створення нотифікацій
-    const { error: notifyError } = await supabaseBrowser.rpc(
-      "notify_friends_about_new_wishlist",
-      { p_wishlist_id: data.id },
-    );
-
-    if (notifyError) {
-      console.error("Failed to notify friends:", notifyError);
+    try {
+      await supabase.rpc("notify_friends_about_new_wishlist", { p_wishlist_id: data.id });
+    } catch (e) {
+      console.error(e);
     }
   }
 
   return data;
 }
+
 export async function updateWishlist(
   wishlistId: string,
-  updates: UpdateWishlistParams,
+  updates: UpdateWishlistParams
 ): Promise<Wishlist> {
   const dbUpdates: Partial<Wishlist> = {};
 
@@ -142,9 +128,9 @@ export async function updateWishlist(
   if (updates.imageUrl !== undefined) dbUpdates.image_url = updates.imageUrl;
   if (updates.accent !== undefined) dbUpdates.accent_type = updates.accent;
   if (updates.event_date !== undefined)
-    dbUpdates.event_date = updates.event_date ? updates.event_date.toISOString() : null;
+    dbUpdates.event_date = updates.event_date as any;
 
-  const { data, error } = await supabaseBrowser
+  const { data, error } = await supabase
     .from("wishlist")
     .update(dbUpdates)
     .eq("id", wishlistId)
@@ -152,12 +138,11 @@ export async function updateWishlist(
     .single();
 
   if (error) throw error;
-
   return data;
 }
 
 export async function deleteWishlist(wishlistId: string): Promise<void> {
-  const { error } = await supabaseBrowser
+  const { error } = await supabase
     .from("wishlist")
     .delete()
     .eq("id", wishlistId);
@@ -166,21 +151,17 @@ export async function deleteWishlist(wishlistId: string): Promise<void> {
 }
 
 export async function getWishlistById(wishlistId: string): Promise<Wishlist> {
-  const { data, error } = await supabaseBrowser.rpc("get_wishlist_by_id", {
+  const { data, error } = await supabase.rpc("get_wishlist_by_id", {
     p_wishlist_id: wishlistId,
   });
 
-  if (error) {
-    console.error("Error fetching wishlist:", error);
-    throw new Error(error.message || "Failed to fetch wishlist");
-  }
-
+  if (error) throw new Error(error.message || "Failed to fetch wishlist");
   return data as Wishlist;
 }
 
 export async function getFriendWishlists(
   friendUserId: string,
-  params: PaginationParams = {},
+  params: PaginationParams = {}
 ): Promise<Wishlist[]> {
   return getWishlists(
     (query) =>
@@ -190,23 +171,23 @@ export async function getFriendWishlists(
           WishlistVisibility.Public,
           WishlistVisibility.FriendsOnly,
         ]),
-    params,
+    params
   );
 }
 
 export async function searchWishlists(
   query: string,
-  params: PaginationParams = {},
+  params: PaginationParams = {}
 ): Promise<Wishlist[]> {
   const { skip = 0, take = 10 } = params;
 
   const {
     data: { session },
-  } = await supabaseBrowser.auth.getSession();
+  } = await supabase.auth.getSession();
 
   if (!session?.user) throw new Error("Not authenticated");
 
-  const { data, error } = await supabaseBrowser
+  const { data, error } = await supabase
     .from("wishlist")
     .select("*, item(count)")
     .eq("user_id", session.user.id)
@@ -216,11 +197,8 @@ export async function searchWishlists(
 
   if (error) throw error;
 
-  return (data ?? []).map((row) => {
-    const { item, ...wishlist } = row as {
-      item?: { count: number }[];
-    } & Wishlist;
-
+  return (data ?? []).map((row: any) => {
+    const { item, ...wishlist } = row;
     return {
       ...wishlist,
       itemsCount: item?.[0]?.count || 0,
@@ -234,19 +212,16 @@ export async function getFriendsUpcomingWishlists(): Promise<
   const {
     data: { session },
     error: sessionError,
-  } = await supabaseBrowser.auth.getSession();
+  } = await supabase.auth.getSession();
 
   if (sessionError) throw sessionError;
   if (!session?.user) throw new Error("Not authenticated");
 
-  const { data, error } = await supabaseBrowser.rpc(
+  const { data, error } = await supabase.rpc(
     "get_friends_upcoming_wishlists",
-    {
-      p_user_id: session.user.id,
-    },
+    { p_user_id: session.user.id }
   );
 
   if (error) throw error;
-
   return data || [];
 }
